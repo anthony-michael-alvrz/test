@@ -62,6 +62,32 @@ body{
   animation:pulse 2.8s ease-in-out infinite;
 }
 @keyframes pulse{0%,100%{opacity:.45;} 50%{opacity:1;}}
+
+/* ---------- Splash decorative art ----------
+   Self-contained: one SVG block + this CSS block. Doesn't affect the
+   centered text layout above (absolutely positioned, sits behind it).
+   Safe to delete both blocks together with no side effects elsewhere. */
+#splash .splash-art{
+  position:absolute; z-index:-1; pointer-events:none;
+  right:4vw; top:50%; transform:translateY(-50%);
+  width:clamp(200px, 28vw, 380px); height:auto; opacity:.55;
+}
+#splash .splash-art path{
+  fill:none; stroke:var(--accent); stroke-linecap:round; stroke-linejoin:round;
+  stroke-dasharray:1; stroke-dashoffset:1;
+  animation:splashArtDraw 9s ease-in-out infinite;
+}
+#splash .splash-art .ridge{stroke-width:2;}
+#splash .splash-art .mist{stroke-width:1.4; opacity:.8;}
+#splash .splash-art .mist:nth-of-type(2){animation-delay:1.2s;}
+#splash .splash-art .mist:nth-of-type(3){animation-delay:2s;}
+@keyframes splashArtDraw{
+  0%,8%{stroke-dashoffset:1;}
+  40%,70%{stroke-dashoffset:0;}
+  100%{stroke-dashoffset:-1;}
+}
+@media (max-width:860px){#splash .splash-art{display:none;}}
+/* ---------- /Splash decorative art ---------- */
 #splash .splash-lang{
   position:absolute; top:clamp(16px,4vw,32px); right:clamp(16px,4vw,32px);
   display:flex; align-items:center; gap:2px;
@@ -118,7 +144,7 @@ main{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;}
 }
 .panel.active{display:block;}
 @keyframes rise{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
-@media (prefers-reduced-motion:reduce){.panel{animation:none;} #splash .enter{animation:none;} *{transition:none !important;}}
+@media (prefers-reduced-motion:reduce){.panel{animation:none;} #splash .enter{animation:none;} #splash .splash-art path{animation:none; stroke-dashoffset:0;} *{transition:none !important;}}
 
 h1.pagehead{
   font-family:var(--font-display); font-size:var(--h1-size); font-weight:var(--h1-weight);
@@ -310,6 +336,11 @@ function renderSplash(){
   const ui = CFG[currentLang].ui, p = CFG.property;
   const splash = document.getElementById('splash');
   splash.innerHTML = `
+    <svg class="splash-art" viewBox="0 0 400 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path class="ridge" pathLength="1" d="M10,230 C50,190 70,140 110,115 C140,97 150,80 175,90 C195,98 190,120 220,122 C260,125 265,75 305,50 C330,35 350,50 365,65 C378,78 385,95 392,115"></path>
+      <path class="mist" pathLength="1" d="M132,58 C152,50 172,50 192,58"></path>
+      <path class="mist" pathLength="1" d="M238,32 C256,25 274,25 290,32"></path>
+    </svg>
     <div class="rule"></div>
     <div class="greet">${esc(ui.splashWelcome)}</div>
     <div class="guest">${esc(p.guestName)}</div>

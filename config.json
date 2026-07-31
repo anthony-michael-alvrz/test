@@ -4,7 +4,7 @@
   "theme": "themes/yunque.css",
 
   "property": {
-    "guestName": "Chantal",
+    "guestName": "Tory",
     "locationLine": "Playas del Yunque, Rio Grande, Puerto Rico",
     "name": "Playas del Yunque",
     "address": "Rio Grande, Puerto Rico",
@@ -114,7 +114,7 @@
   "es": {
     "ui": {
       "tagline": "Guía para huéspedes",
-      "splashWelcome": "Bienvenido",
+      "splashWelcome": "Bienvenido(a)",
       "splashConnector": "a",
       "splashEnter": "Toca en cualquier lugar para comenzar",
       "navHome": "Inicio",
