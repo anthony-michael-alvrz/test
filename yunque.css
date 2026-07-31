@@ -1,0 +1,39 @@
+/* ============================================================
+   THEME: Yunque
+   Flat, airy, light. Muted rainforest greens — sage and moss,
+   nothing saturated. No shadows, no gradients, hairline borders.
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Karla:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root{
+  /* ---- Color ---- */
+  --bg:            #F4F7F2;   /* pale green-tinted paper */
+  --surface:       #FFFFFF;
+  --surface-alt:   #EDF2EA;   /* soft inset wash */
+  --brand:         #4A6551;   /* muted forest — headers, headings */
+  --brand-soft:    #DDE7DC;   /* tinted fill */
+  --on-brand:      #F4F7F2;
+  --accent:        #7D9B82;   /* sage highlight, deliberately quiet */
+  --on-accent:     #FFFFFF;
+  --ink:           #2C332D;
+  --ink-muted:     #728073;
+  --line:          #DFE6DC;
+
+  /* ---- Type ---- */
+  --font-display:  'Outfit', system-ui, sans-serif;
+  --font-body:     'Karla', system-ui, sans-serif;
+  --font-mono:     'IBM Plex Mono', ui-monospace, monospace;
+  --h1-size:       40px;
+  --h1-weight:     300;
+  --h1-tracking:   -0.5px;
+  --body-size:     15px;
+
+  /* ---- Shape & space ---- */
+  --radius:        8px;
+  --radius-lg:     14px;
+  --pill:          999px;
+  --border:        1px;
+  --card-pad:      28px 30px;
+  --section-gap:   22px;
+  --elevation:     none;      /* flat design: no shadows */
+}

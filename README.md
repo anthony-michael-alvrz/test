@@ -1,69 +1,84 @@
 # Guest Guide Kiosk
 
-A single-page, offline-capable guest information display for a short-term rental.
+Offline-capable guest information display for a short-term rental.
 Runs full-screen on a locked-down tablet.
 
-## Files
+## Three separate layers
 
-| File | What it is | Do you edit it? |
+| Layer | Lives in | Edit it when |
 |---|---|---|
-| `config.json` | **All content.** Property details, both languages, every section. | **Yes — this is the only file you normally touch.** |
-| `index.html` | The renderer. Reads config.json and builds the page. | No |
-| `service-worker.js` | Offline caching. | Only to bump `CACHE_VERSION` |
-| `manifest.json` | App name/icon for "Add to Home Screen". | Only for a new property name |
-| `icon-192.png`, `icon-512.png` | App icons. | Optional |
+| **Content** | `config.json` | Guest name, wifi, any text changes |
+| **Look** | `themes/*.css` | You want a different visual style |
+| **Structure** | `index.html` | Almost never |
+
+## Changing the guest name between bookings
+
+1. Open `config.json` on GitHub, click the pencil icon.
+2. Change `property.guestName`.
+3. Commit.
+
+The tablet checks `config.json` every 5 minutes while online and reloads
+itself only if something changed — so a name swap lands within ~5 minutes
+with no trip to the property. (GitHub's CDN adds a minute or two.)
 
 ## Editing content
 
 Everything is in `config.json`.
 
-- **Property basics** (name, wifi, times, address, host) live once under `property` — they are not translated.
-- **Each language** has its own block (`en`, `es`) with the same shape:
-  - `ui` — fixed labels ("Wi-Fi Network", "Check-in")
+- `property` — guest name, location line, wifi, times, host. Not translated.
+- `en` / `es` — one block each, same shape:
+  - `ui` — fixed labels
   - `welcome.sub`, `welcome.hostNote`
-  - `guide.cards[]` — add or remove cards freely, the grid adapts
+  - `guide.cards[]` — add or remove freely, the grid adapts
   - `guide.rules[]`
   - `checkout.steps[]` — numbering is automatic
-  - `local.categories[]` — add or remove whole tabs; each has `items[]`
+  - `local.categories[]` — each becomes a subtab; add a third if you want
 
-Keep the `en` and `es` blocks in sync: if you add a guide card to one, add it to the other.
+Keep `en` and `es` in sync. Validate at jsonlint.com before committing —
+one stray comma blanks the page (you'll get an error screen explaining it).
 
-**Always validate your JSON before committing** — one stray comma breaks the page.
-Paste it into jsonlint.com, or the page will show an error telling you what failed.
+## Changing the theme
 
-## Adding a new property
+Set `"theme"` in `config.json` to any file in `themes/`:
 
-Two options:
+```json
+"theme": "themes/yunque.css"
+```
 
-**A. New repo (cleanest for a separate tablet)**
-1. Copy this whole folder into a new repo.
-2. Edit `config.json` and the `name` in `manifest.json`.
-3. Enable GitHub Pages. Point that tablet at the new URL.
+Two ship with the project:
+- **yunque.css** — flat, airy, muted greens (current)
+- **slate.css** — cooler, squarer, serif headings
 
-**B. One repo, many properties**
-1. Add `config-cabin.json` alongside `config.json`.
+To build your own, copy one and change the token values.
+Full token reference: `themes/README-THEMES.md`.
+
+**Rule:** themes set variables only — never layout. If you find yourself
+writing `display:` or `grid-template:` in a theme, that belongs in
+`index.html` instead.
+
+After editing a theme, bump `CACHE_VERSION` in `service-worker.js` so
+tablets discard the cached old version.
+
+## Running a second property from one repo
+
+1. Add `config-cabin.json` next to `config.json`.
 2. Point that tablet at `index.html?config=config-cabin.json`.
-Each tablet caches its own config, so they stay independent.
+
+Each tablet caches its own config independently. They can use different
+themes too — the theme is named inside each config.
 
 ## Deploying (GitHub Pages)
 
-1. Push these files to the repo root.
-2. Settings > Pages > Deploy from branch > `main` / `root`.
-3. Open the published URL **once on the tablet while online** so the service
-   worker caches everything. After that it works with no internet.
+Push to the repo root, then Settings > Pages > Deploy from branch > `main` / `root`.
 
-## Pushing an update to a tablet already in the field
-
-1. Edit `config.json`, commit.
-2. Next time the tablet is online and reloads, it picks up the new content
-   (config is fetched network-first).
-3. If you changed `index.html` or the CSS, also bump `CACHE_VERSION` in
-   `service-worker.js` so the old shell is discarded.
+Open the published URL **once on the tablet while online** so the service
+worker caches everything. After that it works with no internet.
 
 ## Notes
 
-- Must be served over `http(s)` — service workers and `fetch()` do not work
-  from a `file://` path. GitHub Pages is fine.
-- Language resets to the first entry in `languages` on reload, which is what
-  you want on a shared device.
-- The page auto-reloads every 6 hours, but only when actually online.
+- Must be served over `http(s)`. Service workers and `fetch()` don't work
+  from `file://` — GitHub Pages is fine, double-clicking the file is not.
+- To preview locally: `python3 -m http.server` in this folder, then
+  visit `localhost:8000`.
+- Splash reappears when you tap the property name in the header.
+- Language resets to the first entry in `languages` on reload.
