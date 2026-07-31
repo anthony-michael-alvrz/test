@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1C4552">
+<title>Guest Guide</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sand:#EDE4D3;
+    --sand-deep:#E3D8C2;
+    --driftwood:#8B7C63;
+    --deepsea:#1C4552;
+    --seafoam:#6FA895;
+    --flag:#D9491F;
+    --ink:#23211D;
+    --card:#FBF8F2;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--sand);
+    color:var(--ink);
+    overflow:hidden;
+    -webkit-user-select:none; user-select:none;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .display{font-family:'Archivo Black',sans-serif; font-weight:400;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+
+  #app{display:flex; flex-direction:column; height:100vh; height:100dvh;}
+
+  header{
+    background:var(--deepsea); color:var(--sand);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 28px; flex-shrink:0;
+    border-bottom:4px solid var(--flag); gap:20px; flex-wrap:wrap;
+  }
+  .brand{display:flex; align-items:baseline; gap:14px; flex-shrink:0;}
+  .brand .display{font-size:24px; letter-spacing:0.5px;}
+  .brand .tagline{font-size:11px; color:var(--seafoam); text-transform:uppercase; letter-spacing:2px;}
+
+  .header-right{display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  nav{display:flex; gap:8px; flex-wrap:wrap;}
+  .navbtn{
+    background:transparent; border:2px solid rgba(237,228,211,0.35);
+    color:var(--sand); font-family:'Inter',sans-serif; font-weight:600; font-size:14px;
+    padding:11px 17px; border-radius:999px;
+    display:flex; align-items:center; gap:9px; cursor:pointer; transition:all .2s ease;
+  }
+  .navbtn .mm{
+    font-family:'IBM Plex Mono',monospace; font-size:11px;
+    background:rgba(237,228,211,0.15); padding:3px 7px; border-radius:4px; letter-spacing:0.5px;
+  }
+  .navbtn.active{background:var(--flag); border-color:var(--flag);}
+  .navbtn.active .mm{background:rgba(0,0,0,0.18);}
+  .navbtn:focus-visible{outline:3px solid var(--seafoam); outline-offset:2px;}
+
+  .lang-toggle{
+    display:flex; align-items:center; background:rgba(237,228,211,0.12);
+    border-radius:999px; padding:4px; border:2px solid rgba(237,228,211,0.35); flex-shrink:0;
+  }
+  .lang-btn{
+    font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:13px;
+    padding:9px 15px; border-radius:999px; border:none; background:transparent;
+    color:var(--sand); cursor:pointer; letter-spacing:0.5px;
+  }
+  .lang-btn.active{background:var(--seafoam); color:var(--deepsea);}
+  .lang-btn:focus-visible{outline:3px solid var(--seafoam); outline-offset:2px;}
+
+  main{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;}
+  .panel{
+    display:none; padding:44px 52px 64px; max-width:1100px; margin:0 auto;
+    animation:rise .3s ease;
+  }
+  .panel.active{display:block;}
+  @keyframes rise{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+  @media (prefers-reduced-motion:reduce){ .panel{animation:none;} * {transition:none !important;} }
+
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:2px;
+    text-transform:uppercase; color:var(--driftwood);
+    display:flex; align-items:center; gap:10px; margin-bottom:10px;
+  }
+  .eyebrow::before{content:''; width:26px; height:2px; background:var(--flag);}
+
+  h1.pagehead{font-size:42px; margin-bottom:8px; color:var(--deepsea); line-height:1.1;}
+  .sub{color:var(--driftwood); font-size:16px; margin-bottom:34px; max-width:640px; line-height:1.55;}
+
+  .welcome-grid{display:grid; grid-template-columns:1.3fr 1fr; gap:26px; margin-top:8px;}
+  .card{background:var(--card); border-radius:16px; padding:26px 28px; border:1px solid var(--sand-deep);}
+  .hero-card{background:var(--deepsea); color:var(--sand); border:none;}
+  .hero-card .display{font-size:21px; margin-bottom:14px;}
+  .hero-card p{line-height:1.7; color:#DCE6E4; font-size:15px;}
+  .hero-card .host{margin-top:20px; padding-top:18px; border-top:1px solid rgba(255,255,255,0.15); font-size:14px; color:var(--seafoam);}
+
+  .wifi-card{display:flex; flex-direction:column; gap:13px;}
+  .wifi-card .label{font-size:12px; text-transform:uppercase; letter-spacing:1.5px; color:var(--driftwood); font-weight:600;}
+  .wifi-row{padding:14px 16px; background:var(--sand); border-radius:10px;}
+  .wifi-row .mono{font-size:17px; font-weight:600; color:var(--deepsea); word-break:break-all;}
+
+  .info-strip{display:flex; gap:16px; margin-top:20px; flex-wrap:wrap;}
+  .stat{background:var(--card); border:1px solid var(--sand-deep); border-radius:12px; padding:16px 20px; flex:1; min-width:170px;}
+  .stat .num{font-family:'IBM Plex Mono',monospace; font-size:21px; font-weight:600; color:var(--flag);}
+  .stat .lbl{font-size:12px; color:var(--driftwood); text-transform:uppercase; letter-spacing:1px; margin-top:4px;}
+
+  .guide-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:18px;}
+  .guide-card{background:var(--card); border:1px solid var(--sand-deep); border-radius:14px; padding:22px 24px;}
+  .guide-card h3{font-size:17px; margin-bottom:8px; color:var(--deepsea);}
+  .guide-card p{font-size:14px; line-height:1.6; color:#4A463C;}
+  .rules-card{grid-column:1 / -1; background:var(--deepsea); color:var(--sand); border:none;}
+  .rules-card h3{color:var(--seafoam); margin-bottom:12px;}
+  .rules-card ul{padding-left:18px; line-height:1.9; font-size:14px; color:#DCE6E4;}
+
+  .checkout-banner{
+    background:var(--flag); color:#fff; border-radius:14px;
+    padding:22px 26px; display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:26px; gap:16px; flex-wrap:wrap;
+  }
+  .checkout-banner .display{font-size:20px;}
+  .checkout-banner .time{font-family:'IBM Plex Mono',monospace; font-size:29px; font-weight:600;}
+  .checklist{display:flex; flex-direction:column; gap:12px;}
+  .step{display:flex; align-items:flex-start; gap:16px; background:var(--card); border:1px solid var(--sand-deep); border-radius:12px; padding:16px 20px;}
+  .step .n{
+    font-family:'IBM Plex Mono',monospace; font-weight:600; color:var(--flag);
+    background:var(--sand); width:32px; height:32px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:14px;
+  }
+  .step p{font-size:15px; line-height:1.5;}
+  .step strong{color:var(--deepsea);}
+
+  .subtabs{display:flex; gap:10px; margin-bottom:26px; flex-wrap:wrap;}
+  .subtab{
+    font-family:'Inter',sans-serif; font-weight:600; font-size:14px;
+    padding:10px 18px; border-radius:999px; border:2px solid var(--sand-deep);
+    background:var(--card); color:var(--driftwood); cursor:pointer;
+  }
+  .subtab.active{background:var(--deepsea); color:var(--sand); border-color:var(--deepsea);}
+  .subtab:focus-visible{outline:3px solid var(--deepsea); outline-offset:2px;}
+  .rec-list{display:none; flex-direction:column; gap:13px;}
+  .rec-list.active{display:flex;}
+  .rec{display:flex; justify-content:space-between; gap:20px; background:var(--card); border:1px solid var(--sand-deep); border-radius:14px; padding:18px 22px;}
+  .rec .name{font-size:17px; font-weight:700; color:var(--deepsea);}
+  .rec .desc{font-size:14px; color:#4A463C; margin-top:4px; line-height:1.5;}
+  .rec .dist{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--flag); white-space:nowrap; align-self:center; background:var(--sand); padding:6px 12px; border-radius:8px;}
+
+  #offlineBadge{
+    position:fixed; bottom:16px; right:16px; z-index:50;
+    background:var(--deepsea); color:var(--seafoam);
+    font-size:12px; font-family:'IBM Plex Mono',monospace;
+    padding:9px 14px; border-radius:999px; display:none;
+  }
+  #offlineBadge.show{display:block;}
+
+  #bootError{padding:60px; max-width:700px; margin:0 auto; font-size:16px; line-height:1.6;}
+  #bootError h2{color:var(--flag); margin-bottom:12px; font-family:'Archivo Black',sans-serif;}
+  #bootError code{background:var(--card); padding:2px 6px; border-radius:4px; font-family:'IBM Plex Mono',monospace; font-size:14px;}
+
+  @media (max-width:820px){
+    .welcome-grid{grid-template-columns:1fr;}
+    .guide-grid{grid-template-columns:1fr;}
+    h1.pagehead{font-size:32px;}
+    .panel{padding:32px 24px 56px;}
+    header{padding:14px 20px;}
+  }
+
+  ::-webkit-scrollbar{width:0px;}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+<div id="offlineBadge"></div>
+
+<script>
+/* ============================================================
+   GENERIC RENDERER — you should not need to edit this file.
+   All content lives in config.json.
+   To run a second property from this same repo, add e.g.
+   config-cabin.json and open index.html?config=config-cabin.json
+   ============================================================ */
+
+const params = new URLSearchParams(location.search);
+const CONFIG_FILE = params.get('config') || 'config.json';
+
+let CFG = null;
+let currentLang = null;
+let currentPanel = 'welcome';
+let currentCat = 0;
+
+const esc = (s) => String(s == null ? '' : s)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function boot(){
+  fetch(CONFIG_FILE, {cache:'no-cache'})
+    .then(r => { if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(cfg => {
+      CFG = cfg;
+      currentLang = (cfg.languages && cfg.languages[0] && cfg.languages[0].code) || 'en';
+      render();
+    })
+    .catch(err => {
+      document.getElementById('app').innerHTML =
+        '<div id="bootError"><h2>Couldn\'t load the guide</h2>' +
+        '<p>The renderer could not read <code>' + esc(CONFIG_FILE) + '</code>.</p>' +
+        '<p>Two common causes: the file is missing or has a JSON syntax error (a stray comma is the usual culprit), ' +
+        'or you opened this page directly from the file system. This page must be served over http:// or https:// ' +
+        '— GitHub Pages works, double-clicking the file does not.</p>' +
+        '<p style="margin-top:14px;color:#8B7C63;font-size:14px;">Details: ' + esc(err.message) + '</p></div>';
+    });
+}
+
+function render(){
+  const L = CFG[currentLang];
+  const ui = L.ui;
+  const p = CFG.property;
+
+  const nav = ['welcome','guide','checkout','local'];
+  const navLabels = {
+    welcome: ui.navWelcome, guide: ui.navGuide,
+    checkout: ui.navCheckout, local: ui.navLocal
+  };
+
+  const html = `
+    <header>
+      <div class="brand">
+        <span class="display">${esc(p.name)}</span>
+        <span class="tagline">${esc(ui.tagline)}</span>
+      </div>
+      <div class="header-right">
+        <nav>
+          ${nav.map((k,i) => `
+            <button class="navbtn ${k===currentPanel?'active':''}" data-panel="${k}">
+              <span class="mm">MM ${i}</span> ${esc(navLabels[k])}
+            </button>`).join('')}
+        </nav>
+        <div class="lang-toggle">
+          ${CFG.languages.map(l => `
+            <button class="lang-btn ${l.code===currentLang?'active':''}" data-lang="${esc(l.code)}">${esc(l.label)}</button>
+          `).join('')}
+        </div>
+      </div>
+    </header>
+    <main>
+      ${panelWelcome(L, ui, p)}
+      ${panelGuide(L, ui)}
+      ${panelCheckout(L, ui, p)}
+      ${panelLocal(L, ui)}
+    </main>
+  `;
+
+  document.getElementById('app').innerHTML = html;
+  document.documentElement.lang = currentLang;
+  document.title = p.name + ' — ' + ui.tagline;
+  wireEvents();
+  updateOfflineBadge();
+}
+
+function panelWelcome(L, ui, p){
+  return `
+  <section class="panel ${currentPanel==='welcome'?'active':''}" id="panel-welcome">
+    <div class="eyebrow">${esc(ui.welcomeEyebrow)}</div>
+    <h1 class="pagehead">${esc(ui.welcomeHeadPrefix)} ${esc(p.name)}</h1>
+    <p class="sub">${esc(L.welcome.sub)}</p>
+    <div class="welcome-grid">
+      <div class="card hero-card">
+        <div class="display">${esc(ui.hostNoteTitle)}</div>
+        <p>${esc(L.welcome.hostNote)}</p>
+        <div class="host">
+          <div>${esc(ui.hostedBy)} ${esc(p.hostName)}</div>
+          <div class="mono">${esc(p.hostPhone)}</div>
+        </div>
+      </div>
+      <div class="card wifi-card">
+        <div class="label">${esc(ui.wifiNetworkLabel)}</div>
+        <div class="wifi-row"><span class="mono">${esc(p.wifiNetwork)}</span></div>
+        <div class="label">${esc(ui.wifiPasswordLabel)}</div>
+        <div class="wifi-row"><span class="mono">${esc(p.wifiPassword)}</span></div>
+      </div>
+    </div>
+    <div class="info-strip">
+      <div class="stat"><div class="num">${esc(p.checkin)}</div><div class="lbl">${esc(ui.checkinLbl)}</div></div>
+      <div class="stat"><div class="num">${esc(p.checkout)}</div><div class="lbl">${esc(ui.checkoutLbl)}</div></div>
+      <div class="stat"><div class="num">${esc(p.address)}</div><div class="lbl">${esc(ui.addressLbl)}</div></div>
+    </div>
+  </section>`;
+}
+
+function panelGuide(L, ui){
+  return `
+  <section class="panel ${currentPanel==='guide'?'active':''}" id="panel-guide">
+    <div class="eyebrow">${esc(ui.guideEyebrow)}</div>
+    <h1 class="pagehead">${esc(ui.guideHead)}</h1>
+    <p class="sub">${esc(L.guide.sub)}</p>
+    <div class="guide-grid">
+      ${L.guide.cards.map(c => `
+        <div class="guide-card">
+          <h3>${esc(c.title)}</h3>
+          <p>${esc(c.body)}</p>
+        </div>`).join('')}
+      <div class="guide-card rules-card">
+        <h3>${esc(L.guide.rulesTitle)}</h3>
+        <ul>${L.guide.rules.map(r => `<li>${esc(r)}</li>`).join('')}</ul>
+      </div>
+    </div>
+  </section>`;
+}
+
+function panelCheckout(L, ui, p){
+  return `
+  <section class="panel ${currentPanel==='checkout'?'active':''}" id="panel-checkout">
+    <div class="eyebrow">${esc(ui.checkoutEyebrow)}</div>
+    <h1 class="pagehead">${esc(ui.checkoutHead)}</h1>
+    <div class="checkout-banner">
+      <span class="display">${esc(ui.checkoutBannerLabel)}</span>
+      <span class="time">${esc(p.checkout)}</span>
+    </div>
+    <div class="checklist">
+      ${L.checkout.steps.map((s,i) => `
+        <div class="step">
+          <div class="n">${i+1}</div>
+          <p><strong>${esc(s.title)}</strong> — ${esc(s.body)}</p>
+        </div>`).join('')}
+    </div>
+    <p class="sub" style="margin-top:26px;">${esc(L.checkout.note)}</p>
+  </section>`;
+}
+
+function panelLocal(L, ui){
+  const cats = L.local.categories;
+  return `
+  <section class="panel ${currentPanel==='local'?'active':''}" id="panel-local">
+    <div class="eyebrow">${esc(ui.localEyebrow)}</div>
+    <h1 class="pagehead">${esc(ui.localHead)}</h1>
+    <div class="subtabs">
+      ${cats.map((c,i) => `
+        <button class="subtab ${i===currentCat?'active':''}" data-cat="${i}">${esc(c.label)}</button>
+      `).join('')}
+    </div>
+    ${cats.map((c,i) => `
+      <div class="rec-list ${i===currentCat?'active':''}" data-list="${i}">
+        ${c.items.map(it => `
+          <div class="rec">
+            <div>
+              <div class="name">${esc(it.name)}</div>
+              ${it.desc ? `<div class="desc">${esc(it.desc)}</div>` : ''}
+            </div>
+            ${it.meta ? `<div class="dist">${esc(it.meta)}</div>` : ''}
+          </div>`).join('')}
+      </div>`).join('')}
+  </section>`;
+}
+
+function wireEvents(){
+  document.querySelectorAll('.navbtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentPanel = btn.dataset.panel;
+      document.querySelectorAll('.navbtn').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('.panel').forEach(pn =>
+        pn.classList.toggle('active', pn.id === 'panel-' + currentPanel));
+      document.querySelector('main').scrollTop = 0;
+    });
+  });
+
+  document.querySelectorAll('.subtab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentCat = parseInt(btn.dataset.cat, 10);
+      document.querySelectorAll('.subtab').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('.rec-list').forEach(l =>
+        l.classList.toggle('active', parseInt(l.dataset.list,10) === currentCat));
+    });
+  });
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentLang = btn.dataset.lang;
+      render(); // keeps currentPanel and currentCat, so guests stay where they were
+    });
+  });
+}
+
+function updateOfflineBadge(){
+  const badge = document.getElementById('offlineBadge');
+  if(!CFG) return;
+  badge.textContent = CFG[currentLang].ui.offlineNotice || '';
+  badge.classList.toggle('show', !navigator.onLine);
+}
+window.addEventListener('online', updateOfflineBadge);
+window.addEventListener('offline', updateOfflineBadge);
+
+/* ---- Service worker (offline support) ---- */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').catch(e =>
+      console.log('SW registration failed:', e));
+  });
+}
+
+/* ---- Refresh every 6 hours, only when actually online ---- */
+setInterval(() => { if (navigator.onLine) location.reload(); }, 6*60*60*1000);
+
+boot();
+</script>
+</body>
+</html>
