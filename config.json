@@ -4,16 +4,16 @@
   "theme": "themes/yunque.css",
 
   "property": {
-    "guestName": "Maria",
+    "guestName": "Chantal",
     "locationLine": "Playas del Yunque, Rio Grande, Puerto Rico",
     "name": "Playas del Yunque",
     "address": "Rio Grande, Puerto Rico",
-    "checkin": "4:00 PM",
+    "checkin": "3:00 PM",
     "checkout": "11:00 AM",
-    "hostName": "Anthony",
-    "hostPhone": "(555) 010-2938",
-    "wifiNetwork": "PlayasDelYunque_Guest",
-    "wifiPassword": "elyunque2026"
+    "hostName": "Anthony and David",
+    "hostPhone": "(787)529-7555",
+    "wifiNetwork": "VTR-4308000",
+    "wifiPassword": "xf8VywqgQjdg"
   },
 
   "languages": [
@@ -49,37 +49,41 @@
 
     "welcome": {
       "sub": "Everything you need for your stay is on this tablet. Tap the tabs above anytime.",
-      "hostNote": "Make yourself at home. El Yunque National Forest is a short drive inland, and the beach is just steps away. If anything comes up during your stay, don't hesitate to reach out."
+      "hostNote": "Make yourself at home. El Yunque National Forest is right behind you, and the beach is just steps away in front. If anything comes up during your stay, don't hesitate to reach out."
     },
 
     "guide": {
       "sub": "Quick instructions for the essentials around the apartment.",
       "cards": [
-        { "title": "Air Conditioning", "body": "Units are in the bedroom and living room. Use the white remote on the wall hook — please turn them off when you head out for the day." },
-        { "title": "Kitchen", "body": "Coffee, filters, and basic spices are in the cabinet above the coffee maker. Dishwasher pods are under the sink." },
-        { "title": "Water", "body": "Tap water is safe to drink, though there's a filtered pitcher in the fridge if you prefer. Bottled water is in the pantry." },
-        { "title": "TV & Streaming", "body": "Netflix and YouTube are logged in on the living room TV. Use the black remote and press Input if it opens to the wrong source." },
-        { "title": "Parking", "body": "One assigned spot is available. Street parking is also free in front of the building." },
-        { "title": "Beach Gear", "body": "Chairs, umbrellas, and towels are in the hall closet. Please rinse the sand off and leave them to dry on the balcony." }
+        { "title": "Air Conditioning", "body": "Units are in the bedroom and living room. Use any of the white remotes to control — please turn them off when you head out for the day." },
+        { "title": "Kitchen", "body": "Coffee grounds are available above the microwave for espresso or drip coffee. Your preference." },
+        { "title": "Water", "body": "Tap water is safe to drink." },
+        { "title": "TV & Streaming", "body": "Both TVs are Smart TVs with your favorite streamin apps. Feel free to log yourself in." },
+        { "title": "Parking", "body": "One assigned spot is available #788." },
+        { "title": "Beach Gear", "body": "Beach chairs, cooler, umbrellas, and other essentials are in the bedroom closet." },
+        { "title": "Pool", "body": "Pool key is hanging on the entrance key-hanger." },
+        { "title": "Laundry", "body": "The washer/dryer are located right outside the entrance door. The code to access it is 1234 (then press middle button). To lock it, hold the middle button." },
+        { "title": "Lock Entrance Door", "body": "To lock press and hold the lock button until is closes." }
       ],
       "rulesTitle": "House Rules",
       "rules": [
         "Quiet hours are 10pm–8am, please be mindful of neighbors",
+        "Refrain from hanging towels and clothes on the balcony railings",
         "No smoking inside the apartment",
         "No additional guests beyond those booked",
-        "Please shake sand off before coming inside"
+        "Please shake sand off before coming inside",
+        "No pets allowed",
+        "No parties allowed"
       ]
     },
 
     "checkout": {
       "steps": [
-        { "title": "Start the dishwasher", "body": "load anything in the sink and press start, no need to unload it." },
-        { "title": "Take out the trash", "body": "bag it up and drop it in the bins by the building entrance." },
-        { "title": "Gather towels", "body": "leave used towels and linens in a pile by the washing machine." },
+        { "title": "Throw trash away", "body": "there's an area to drop off any trash halfway across the parking lot." },
         { "title": "Turn off the AC and lights", "body": "please make sure both units are off before you leave." },
-        { "title": "Lock up", "body": "pull the front door shut until it clicks, and return the key to the lockbox." }
+        { "title": "Lock up", "body": "press and hold the lock button until the front door closes." }
       ],
-      "note": "Need a later check-out? Text your host before 9am the day of and we'll do our best to accommodate."
+      "note": "Need a later check-out? Text your host a day in advanced and we'll do our best to accommodate."
     },
 
     "local": {
@@ -87,18 +91,20 @@
         {
           "label": "Things To Do",
           "items": [
-            { "name": "El Yunque National Forest", "desc": "The only tropical rainforest in the U.S. National Forest System. Reserve a vehicle entry pass online in advance — they sell out.", "meta": "20 min drive" },
-            { "name": "La Mina Falls", "desc": "A popular waterfall hike inside El Yunque. Wear shoes with grip, the trail gets slick.", "meta": "25 min drive" },
-            { "name": "Playa Escondida", "desc": "Quiet stretch of sand, good for a morning walk before the sun gets strong.", "meta": "5 min drive" },
-            { "name": "Bioluminescent Bay Tour", "desc": "Kayak tours run at night in nearby Fajardo. Book a few days ahead, and go on a night with little moonlight.", "meta": "30 min drive" }
+            { "name": "El Yunque National Forest", "desc": "The only tropical rainforest in the U.S. National Forest System. Reserve a vehicle entry pass online in advance — they sell out.", "meta": "15 min drive" },
+            { "name": "La Mina Falls", "desc": "A popular waterfall hike inside El Yunque. Wear shoes with grip, the trail gets slick.", "meta": "30 min drive" },
+            { "name": "Where the river meets the ocean", "desc": "our favorite activity: take an early morning walk on the beach (to the right-hand side when looking at the ocean) and you'll arrive to a spot where the river flows into the sea.", "meta": "15 min walk" },
+            { "name": "Cayo Icacos", "desc": "Turqouise beach in the middle of the ocean. Book a water taxi online and take plenty of sunscreen. Some of our family members recommend booking it on a catamaran as well.", "meta": "30 min drive" }
           ]
         },
         {
           "label": "Restaurants",
           "items": [
-            { "name": "Lluvia Restaurant", "desc": "Local Puerto Rican cooking with a rainforest view. Try the mofongo.", "meta": "10 min drive" },
-            { "name": "Kioskos de Luquillo", "desc": "A long row of food kiosks by the beach — dozens of options, from fried snacks to full seafood plates.", "meta": "15 min drive" },
-            { "name": "Sandy's Seafood", "desc": "Casual spot known for fresh catch and generous portions. Cash preferred.", "meta": "12 min drive" }
+            { "name": "W Sushi", "desc": "The sushi you know and love, enhanced with a tropical flair. Try the mofongo.", "meta": "10 min drive" },
+            { "name": "Kioskos de Luquillo", "desc": "A long row of food kiosks by the beach — dozens of options, from fried snacks to full seafood plates.", "meta": "10 min drive" },
+            { "name": "La Parilla", "desc": "Located at the Kioskos de Luqillo. Order the seafood mofongo with the garlic sauce.", "meta": "10 min drive" },
+            { "name": "Terraza Montemar", "desc": "Closes spot for authentic Puerto Rican cuisine that we would recommend and have generours portions. Order the Chuletas Kan Kan.", "meta": "5 min drive" },
+            { "name": "Richie's", "desc": "Excellent for a quick beer with a great view.", "meta": "5 min drive" }
           ]
         }
       ]
@@ -133,37 +139,41 @@
 
     "welcome": {
       "sub": "Todo lo que necesitas para tu estadía está en esta tablet. Toca las pestañas de arriba en cualquier momento.",
-      "hostNote": "Siéntete como en casa. El Bosque Nacional El Yunque está a poca distancia en auto, y la playa está a unos pasos. Si necesitas algo durante tu estadía, no dudes en contactarnos."
+      "hostNote": "Siéntete como en casa. El Bosque Nacional El Yunque está justo detrás, y la playa está a unos pasos al frente. Si necesitas algo durante tu estadía, no dudes en contactarnos."
     },
 
     "guide": {
       "sub": "Instrucciones rápidas sobre lo esencial del apartamento.",
       "cards": [
-        { "title": "Aire acondicionado", "body": "Las unidades están en el dormitorio y la sala. Usa el control blanco del gancho en la pared — por favor apágalas cuando salgas por el día." },
-        { "title": "Cocina", "body": "Café, filtros y especias básicas están en el armario sobre la cafetera. Las pastillas del lavavajillas están debajo del fregadero." },
-        { "title": "Agua", "body": "El agua del grifo es potable, pero hay una jarra con filtro en la nevera si la prefieres. Hay agua embotellada en la despensa." },
-        { "title": "TV y streaming", "body": "Netflix y YouTube ya están conectados en el televisor de la sala. Usa el control negro y presiona Input si se abre en la fuente equivocada." },
-        { "title": "Estacionamiento", "body": "Hay un espacio asignado disponible. También es gratis estacionar en la calle frente al edificio." },
-        { "title": "Equipo de playa", "body": "Sillas, sombrillas y toallas están en el armario del pasillo. Por favor enjuaga la arena y déjalos secar en el balcón." }
+        { "title": "Aire acondicionado", "body": "Las unidades están en el dormitorio y la sala. Usa cualquiera de los controles blancos para manejarlas — por favor apágalas cuando salgas por el día." },
+        { "title": "Cocina", "body": "Hay café molido disponible arriba del microondas, para espresso o café de filtro. Como prefieras." },
+        { "title": "Agua", "body": "El agua del grifo es potable." },
+        { "title": "TV y streaming", "body": "Ambos televisores son Smart TVs con tus aplicaciones de streaming favoritas. Siéntete libre de iniciar sesión con tu cuenta." },
+        { "title": "Estacionamiento", "body": "Hay un espacio asignado disponible, el #788." },
+        { "title": "Equipo de playa", "body": "Sillas de playa, nevera portátil, sombrillas y otros artículos esenciales están en el clóset del dormitorio." },
+        { "title": "Piscina", "body": "La llave de la piscina está colgada en el llavero de la entrada." },
+        { "title": "Lavandería", "body": "La lavadora y secadora están justo afuera de la puerta de entrada. El código de acceso es 1234 (luego presiona el botón del medio). Para cerrarla con llave, mantén presionado el botón del medio." },
+        { "title": "Cerradura de la puerta de entrada", "body": "Para cerrarla, mantén presionado el botón de cerrado hasta que se cierre." }
       ],
       "rulesTitle": "Reglas de la casa",
       "rules": [
         "El horario de silencio es de 10pm a 8am, por favor respeta a los vecinos",
+        "Evita colgar toallas y ropa en las barandas del balcón",
         "No fumar dentro del apartamento",
         "No se permiten huéspedes adicionales a los reservados",
-        "Por favor sacúdete la arena antes de entrar"
+        "Por favor sacúdete la arena antes de entrar",
+        "No se permiten mascotas",
+        "No se permiten fiestas"
       ]
     },
 
     "checkout": {
       "steps": [
-        { "title": "Inicia el lavavajillas", "body": "coloca lo que haya en el fregadero y presiona iniciar, no es necesario vaciarlo." },
-        { "title": "Saca la basura", "body": "embólsala y déjala en los contenedores junto a la entrada del edificio." },
-        { "title": "Junta las toallas", "body": "deja las toallas y sábanas usadas en una pila junto a la lavadora." },
+        { "title": "Bota la basura", "body": "hay un área para dejar la basura a mitad del estacionamiento." },
         { "title": "Apaga el aire y las luces", "body": "por favor asegúrate de que ambas unidades estén apagadas antes de salir." },
-        { "title": "Cierra con llave", "body": "empuja la puerta principal hasta que haga clic, y devuelve la llave a la caja de seguridad." }
+        { "title": "Cierra con llave", "body": "mantén presionado el botón de cerrado hasta que la puerta principal se cierre." }
       ],
-      "note": "¿Necesitas salir más tarde? Envía un mensaje a tu anfitrión antes de las 9am de ese día y haremos lo posible por ayudarte."
+      "note": "¿Necesitas salir más tarde? Envía un mensaje a tu anfitrión con un día de anticipación y haremos lo posible por ayudarte."
     },
 
     "local": {
@@ -171,18 +181,20 @@
         {
           "label": "Qué hacer",
           "items": [
-            { "name": "Bosque Nacional El Yunque", "desc": "El único bosque tropical lluvioso del Sistema Forestal Nacional de EE. UU. Reserva el pase de entrada en línea con anticipación — se agotan.", "meta": "20 min en auto" },
-            { "name": "Cascada La Mina", "desc": "Una caminata popular a una cascada dentro de El Yunque. Usa zapatos con buen agarre, el sendero se pone resbaloso.", "meta": "25 min en auto" },
-            { "name": "Playa Escondida", "desc": "Un tramo tranquilo de arena, ideal para caminar por la mañana antes de que el sol pegue fuerte.", "meta": "5 min en auto" },
-            { "name": "Tour de la Bahía Bioluminiscente", "desc": "Los tours en kayak salen de noche desde Fajardo. Reserva con días de anticipación y ve en una noche con poca luna.", "meta": "30 min en auto" }
+            { "name": "Bosque Nacional El Yunque", "desc": "El único bosque tropical lluvioso del Sistema Forestal Nacional de EE. UU. Reserva el pase de entrada en línea con anticipación — se agotan.", "meta": "15 min en auto" },
+            { "name": "Cascada La Mina", "desc": "Una caminata popular a una cascada dentro de El Yunque. Usa zapatos con buen agarre, el sendero se pone resbaloso.", "meta": "30 min en auto" },
+            { "name": "Donde el río se encuentra con el mar", "desc": "nuestra actividad favorita: da una caminata temprano en la mañana por la playa (hacia la derecha mirando hacia el mar) y llegarás a un punto donde el río desemboca en el mar.", "meta": "15 min caminando" },
+            { "name": "Cayo Icacos", "desc": "Playa turquesa en medio del océano. Reserva un taxi acuático en línea y lleva bastante protector solar. Algunos de nuestros familiares también recomiendan reservarlo en catamarán.", "meta": "30 min en auto" }
           ]
         },
         {
           "label": "Restaurantes",
           "items": [
-            { "name": "Lluvia Restaurant", "desc": "Cocina puertorriqueña local con vista al bosque. Prueba el mofongo.", "meta": "10 min en auto" },
-            { "name": "Kioskos de Luquillo", "desc": "Una larga fila de kioscos de comida junto a la playa — decenas de opciones, desde frituras hasta platos completos de mariscos.", "meta": "15 min en auto" },
-            { "name": "Sandy's Seafood", "desc": "Lugar informal conocido por su pescado fresco y porciones generosas. Prefieren efectivo.", "meta": "12 min en auto" }
+            { "name": "W Sushi", "desc": "El sushi que conoces y amas, con un toque tropical. Prueba el mofongo.", "meta": "10 min en auto" },
+            { "name": "Kioskos de Luquillo", "desc": "Una larga fila de kioscos de comida junto a la playa — decenas de opciones, desde frituras hasta platos completos de mariscos.", "meta": "10 min en auto" },
+            { "name": "La Parilla", "desc": "Ubicado en los Kioskos de Luquillo. Ordena el mofongo de mariscos con la salsa de ajo.", "meta": "10 min en auto" },
+            { "name": "Terraza Montemar", "desc": "El lugar más cercano de cocina puertorriqueña auténtica que recomendamos, con porciones generosas. Ordena las Chuletas Kan Kan.", "meta": "5 min en auto" },
+            { "name": "Richie's", "desc": "Excelente para una cerveza rápida con una vista increíble.", "meta": "5 min en auto" }
           ]
         }
       ]
