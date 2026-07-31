@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1C4552">
+<title>Guest Information</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sand:#EDE4D3;
+    --sand-deep:#E3D8C2;
+    --driftwood:#8B7C63;
+    --driftwood-light:#B7A98E;
+    --deepsea:#1C4552;
+    --deepsea-light:#2B5E6E;
+    --seafoam:#6FA895;
+    --flag:#D9491F;
+    --ink:#23211D;
+    --card:#FBF8F2;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--sand);
+    color:var(--ink);
+    overflow:hidden;
+    -webkit-user-select:none;
+    user-select:none;
+  }
+  .display{font-family:'Archivo Black',sans-serif; font-weight:400;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+
+  #app{display:flex; flex-direction:column; height:100vh;}
+
+  header{
+    background:var(--deepsea);
+    color:var(--sand);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:18px 32px;
+    flex-shrink:0;
+    border-bottom:4px solid var(--flag);
+    gap:20px;
+  }
+  .brand{display:flex; align-items:baseline; gap:14px; flex-shrink:0;}
+  .brand .display{font-size:26px; letter-spacing:0.5px;}
+  .brand .tagline{font-size:12px; color:var(--seafoam); text-transform:uppercase; letter-spacing:2px;}
+
+  .header-right{display:flex; align-items:center; gap:16px;}
+  nav{display:flex; gap:10px;}
+  .navbtn{
+    background:transparent;
+    border:2px solid rgba(237,228,211,0.35);
+    color:var(--sand);
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    padding:12px 18px;
+    border-radius:999px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+    transition:all .2s ease;
+  }
+  .navbtn .mm{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    background:rgba(237,228,211,0.15);
+    padding:3px 7px;
+    border-radius:4px;
+    letter-spacing:0.5px;
+  }
+  .navbtn.active{
+    background:var(--flag);
+    border-color:var(--flag);
+  }
+  .navbtn.active .mm{background:rgba(0,0,0,0.18);}
+  .navbtn:not(.active):active{background:rgba(237,228,211,0.15);}
+
+  .lang-toggle{
+    display:flex; align-items:center; background:rgba(237,228,211,0.12);
+    border-radius:999px; padding:4px; border:2px solid rgba(237,228,211,0.35); flex-shrink:0;
+  }
+  .lang-btn{
+    font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:13px;
+    padding:9px 16px; border-radius:999px; border:none; background:transparent;
+    color:var(--sand); cursor:pointer; letter-spacing:0.5px;
+  }
+  .lang-btn.active{background:var(--seafoam); color:var(--deepsea);}
+
+  main{flex:1; overflow-y:auto; position:relative;}
+  .panel{
+    display:none;
+    padding:48px 56px 64px;
+    max-width:1100px;
+    margin:0 auto;
+    animation:rise .35s ease;
+  }
+  .panel.active{display:block;}
+  @keyframes rise{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--driftwood);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  .eyebrow::before{content:''; width:26px; height:2px; background:var(--flag);}
+
+  h1.pagehead{font-size:44px; margin-bottom:8px; color:var(--deepsea);}
+  .sub{color:var(--driftwood); font-size:16px; margin-bottom:36px; max-width:640px; line-height:1.5;}
+
+  .welcome-grid{display:grid; grid-template-columns:1.3fr 1fr; gap:28px; margin-top:8px;}
+  .card{
+    background:var(--card);
+    border-radius:16px;
+    padding:26px 28px;
+    border:1px solid var(--sand-deep);
+  }
+  .hero-card{background:var(--deepsea); color:var(--sand); border:none;}
+  .hero-card .display{font-size:22px; margin-bottom:14px;}
+  .hero-card p{line-height:1.7; color:#DCE6E4; font-size:15px;}
+  .hero-card .host{margin-top:20px; padding-top:18px; border-top:1px solid rgba(255,255,255,0.15); font-size:14px; color:var(--seafoam);}
+
+  .wifi-card{display:flex; flex-direction:column; gap:14px;}
+  .wifi-card .label{font-size:12px; text-transform:uppercase; letter-spacing:1.5px; color:var(--driftwood); font-weight:600;}
+  .wifi-row{display:flex; justify-content:space-between; align-items:center; padding:14px 16px; background:var(--sand); border-radius:10px;}
+  .wifi-row .mono{font-size:17px; font-weight:600; color:var(--deepsea);}
+
+  .info-strip{display:flex; gap:18px; margin-top:20px;}
+  .stat{background:var(--card); border:1px solid var(--sand-deep); border-radius:12px; padding:16px 20px; flex:1;}
+  .stat .num{font-family:'IBM Plex Mono',monospace; font-size:22px; font-weight:600; color:var(--flag);}
+  .stat .lbl{font-size:12px; color:var(--driftwood); text-transform:uppercase; letter-spacing:1px; margin-top:4px;}
+
+  .guide-grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:20px;}
+  .guide-card{background:var(--card); border:1px solid var(--sand-deep); border-radius:14px; padding:22px 24px;}
+  .guide-card h3{font-size:17px; margin-bottom:8px; color:var(--deepsea);}
+  .guide-card p{font-size:14px; line-height:1.6; color:#4A463C;}
+  .rules-card{grid-column:1 / -1; background:var(--deepsea); color:var(--sand); border:none;}
+  .rules-card h3{color:var(--seafoam); margin-bottom:12px;}
+  .rules-card ul{padding-left:18px; line-height:1.9; font-size:14px; color:#DCE6E4;}
+
+  .checkout-banner{
+    background:var(--flag); color:#fff; border-radius:14px;
+    padding:22px 26px; display:flex; justify-content:space-between; align-items:center; margin-bottom:28px;
+  }
+  .checkout-banner .display{font-size:20px;}
+  .checkout-banner .time{font-family:'IBM Plex Mono',monospace; font-size:30px; font-weight:600;}
+  .checklist{display:flex; flex-direction:column; gap:12px;}
+  .step{
+    display:flex; align-items:flex-start; gap:16px;
+    background:var(--card); border:1px solid var(--sand-deep); border-radius:12px; padding:16px 20px;
+  }
+  .step .n{
+    font-family:'IBM Plex Mono',monospace; font-weight:600; color:var(--flag);
+    background:var(--sand); width:32px; height:32px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:14px;
+  }
+  .step p{font-size:15px; line-height:1.5;}
+  .step strong{color:var(--deepsea);}
+
+  .subtabs{display:flex; gap:10px; margin-bottom:28px;}
+  .subtab{
+    font-family:'Inter',sans-serif; font-weight:600; font-size:14px;
+    padding:10px 18px; border-radius:999px; border:2px solid var(--sand-deep);
+    background:var(--card); color:var(--driftwood); cursor:pointer;
+  }
+  .subtab.active{background:var(--deepsea); color:var(--sand); border-color:var(--deepsea);}
+  .rec-list{display:none; flex-direction:column; gap:14px;}
+  .rec-list.active{display:flex;}
+  .rec{
+    display:flex; justify-content:space-between; gap:20px;
+    background:var(--card); border:1px solid var(--sand-deep); border-radius:14px; padding:18px 22px;
+  }
+  .rec .name{font-size:17px; font-weight:700; color:var(--deepsea);}
+  .rec .desc{font-size:14px; color:#4A463C; margin-top:4px; line-height:1.5;}
+  .rec .dist{
+    font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--flag);
+    white-space:nowrap; align-self:center; background:var(--sand); padding:6px 12px; border-radius:8px;
+  }
+
+  ::-webkit-scrollbar{width:0px;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header>
+    <div class="brand">
+      <span class="display" data-i18n="propName">Casa Marea</span>
+      <span class="tagline" data-i18n="tagline">Guest Guide</span>
+    </div>
+    <div class="header-right">
+      <nav>
+        <button class="navbtn active" data-panel="welcome"><span class="mm">MM 0</span> <span data-i18n="navWelcome">Welcome</span></button>
+        <button class="navbtn" data-panel="guide"><span class="mm">MM 1</span> <span data-i18n="navGuide">House Guide</span></button>
+        <button class="navbtn" data-panel="checkout"><span class="mm">MM 2</span> <span data-i18n="navCheckout">Check-out</span></button>
+        <button class="navbtn" data-panel="local"><span class="mm">MM 3</span> <span data-i18n="navLocal">Local Picks</span></button>
+      </nav>
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="es">ES</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ================= WELCOME ================= -->
+    <section class="panel active" id="panel-welcome">
+      <div class="eyebrow" data-i18n="welcomeEyebrow">Mile Marker 0 — Start Here</div>
+      <h1 class="pagehead"><span data-i18n="welcomeHeadPrefix">Welcome to</span> <span data-i18n="propName">Casa Marea</span></h1>
+      <p class="sub" data-i18n="welcomeSub">We're so glad you're here. This tablet has everything you need for your stay — house instructions, check-out steps, and our favorite local spots. Tap a tab above anytime.</p>
+
+      <div class="welcome-grid">
+        <div class="card hero-card">
+          <div class="display" data-i18n="hostNoteTitle">A note from your host</div>
+          <p data-i18n="hostNote">Make yourself at home. The beach is a 3-minute walk out the back gate, and there's a stack of towels and umbrellas in the hall closet for you to use. If anything comes up during your stay, don't hesitate to reach out.</p>
+          <div class="host">
+            <div data-i18n="hostName">Hosted by Anthony</div>
+            <div class="mono">(555) 010-2938</div>
+          </div>
+        </div>
+
+        <div class="card wifi-card">
+          <div class="label" data-i18n="wifiNetworkLabel">Wi-Fi Network</div>
+          <div class="wifi-row"><span class="mono">CasaMarea_Guest</span></div>
+          <div class="label" data-i18n="wifiPasswordLabel">Wi-Fi Password</div>
+          <div class="wifi-row"><span class="mono">saltyBreeze24</span></div>
+        </div>
+      </div>
+
+      <div class="info-strip">
+        <div class="stat"><div class="num">4:00 PM</div><div class="lbl" data-i18n="checkinLbl">Check-in</div></div>
+        <div class="stat"><div class="num">10:00 AM</div><div class="lbl" data-i18n="checkoutLbl">Check-out</div></div>
+        <div class="stat"><div class="num">214 Shoreline Ave</div><div class="lbl" data-i18n="addressLbl">Address</div></div>
+      </div>
+    </section>
+
+    <!-- ================= HOUSE GUIDE ================= -->
+    <section class="panel" id="panel-guide">
+      <div class="eyebrow" data-i18n="guideEyebrow">Mile Marker 1 — Getting Settled</div>
+      <h1 class="pagehead" data-i18n="guideHead">House Guide</h1>
+      <p class="sub" data-i18n="guideSub">Quick instructions for the essentials around the apartment.</p>
+
+      <div class="guide-grid">
+        <div class="guide-card">
+          <h3 data-i18n="acTitle">AC &amp; Heat</h3>
+          <p data-i18n="acBody">Thermostat is on the hallway wall by the kitchen. Press the dial to adjust — please keep it between 68–76°F while the windows are open so it doesn't work overtime.</p>
+        </div>
+        <div class="guide-card">
+          <h3 data-i18n="kitchenTitle">Kitchen</h3>
+          <p data-i18n="kitchenBody">Coffee, tea, and basic spices are stocked in the cabinet above the coffee maker. Dishwasher pods are under the sink — just push start, no rinse needed.</p>
+        </div>
+        <div class="guide-card">
+          <h3 data-i18n="tvTitle">TV &amp; Streaming</h3>
+          <p data-i18n="tvBody">Netflix and YouTube are logged in on the living room TV. Use the black remote — press "Input" if it opens to the wrong source.</p>
+        </div>
+        <div class="guide-card">
+          <h3 data-i18n="parkingTitle">Parking</h3>
+          <p data-i18n="parkingBody">One assigned spot in the lot behind the building, marked with your unit number. Street parking is free after 6pm and on weekends.</p>
+        </div>
+        <div class="guide-card">
+          <h3 data-i18n="trashTitle">Trash &amp; Recycling</h3>
+          <p data-i18n="trashBody">Bins are in the side alley. Trash pickup is Tuesday and Friday mornings — please have bags out by 8am.</p>
+        </div>
+        <div class="guide-card">
+          <h3 data-i18n="beachTitle">Beach Gear</h3>
+          <p data-i18n="beachBody">Umbrellas, chairs, and towels are in the hall closet. Please rinse and hang towels to dry on the back patio before your stay ends.</p>
+        </div>
+
+        <div class="guide-card rules-card">
+          <h3 data-i18n="rulesTitle">House Rules</h3>
+          <ul>
+            <li data-i18n="rule1">Quiet hours are 10pm–8am, please be mindful of neighbors</li>
+            <li data-i18n="rule2">No smoking inside the apartment</li>
+            <li data-i18n="rule3">No additional guests beyond those booked</li>
+            <li data-i18n="rule4">Please don't move furniture between rooms</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CHECKOUT ================= -->
+    <section class="panel" id="panel-checkout">
+      <div class="eyebrow" data-i18n="checkoutEyebrow">Mile Marker 2 — Before You Go</div>
+      <h1 class="pagehead" data-i18n="checkoutHead">Check-out Instructions</h1>
+
+      <div class="checkout-banner">
+        <span class="display" data-i18n="checkoutBannerLabel">Check-out time</span>
+        <span class="time">10:00 AM</span>
+      </div>
+
+      <div class="checklist">
+        <div class="step"><div class="n">1</div><p><strong data-i18n="step1Title">Start the dishwasher</strong> — <span data-i18n="step1Body">load any dishes in the sink and press start, no need to unload it.</span></p></div>
+        <div class="step"><div class="n">2</div><p><strong data-i18n="step2Title">Take out the trash</strong> — <span data-i18n="step2Body">bag it up and drop it in the alley bins out back.</span></p></div>
+        <div class="step"><div class="n">3</div><p><strong data-i18n="step3Title">Gather towels</strong> — <span data-i18n="step3Body">leave used towels and linens in a pile by the washing machine.</span></p></div>
+        <div class="step"><div class="n">4</div><p><strong data-i18n="step4Title">Turn off AC/heat and lights</strong> — <span data-i18n="step4Body">set the thermostat back to 72°F.</span></p></div>
+        <div class="step"><div class="n">5</div><p><strong data-i18n="step5Title">Lock up</strong> — <span data-i18n="step5Body">pull the front door shut until it clicks, and drop the key in the lockbox by the entrance.</span></p></div>
+      </div>
+
+      <p class="sub" style="margin-top:28px;" data-i18n="checkoutNote">Need a later check-out? Text your host before 9am the day of and we'll do our best to accommodate.</p>
+    </section>
+
+    <!-- ================= LOCAL RECOMMENDATIONS ================= -->
+    <section class="panel" id="panel-local">
+      <div class="eyebrow" data-i18n="localEyebrow">Mile Marker 3 — Explore the Area</div>
+      <h1 class="pagehead" data-i18n="localHead">Local Picks</h1>
+
+      <div class="subtabs">
+        <button class="subtab active" data-list="restaurants" data-i18n="tabRestaurants">Restaurants</button>
+        <button class="subtab" data-list="things" data-i18n="tabThings">Things To Do</button>
+        <button class="subtab" data-list="groceries" data-i18n="tabGroceries">Groceries</button>
+      </div>
+
+      <div class="rec-list active" id="list-restaurants">
+        <div class="rec"><div><div class="name">The Salt Table</div><div class="desc" data-i18n="rest1">Fresh seafood right on the water — go for sunset and get the grilled snapper.</div></div><div class="dist">0.4 mi</div></div>
+        <div class="rec"><div><div class="name">Dune Coffee Co.</div><div class="desc" data-i18n="rest2">Best espresso in town, and their breakfast sandwiches are worth the short line.</div></div><div class="dist">0.2 mi</div></div>
+        <div class="rec"><div><div class="name">Pier 9 Taco Shack</div><div class="desc" data-i18n="rest3">Casual, cash-only, incredible fish tacos. Open until 9pm.</div></div><div class="dist">0.6 mi</div></div>
+      </div>
+
+      <div class="rec-list" id="list-things">
+        <div class="rec"><div><div class="name" data-i18n="thing1name">Public Beach Access</div><div class="desc" data-i18n="thing1">Right at the end of the street — quietest in the morning before 10am.</div></div><div class="dist">0.1 mi</div></div>
+        <div class="rec"><div><div class="name" data-i18n="thing2name">Shoreline Bike Rentals</div><div class="desc" data-i18n="thing2">Rent beach cruisers by the hour, great for the boardwalk path.</div></div><div class="dist">0.3 mi</div></div>
+        <div class="rec"><div><div class="name" data-i18n="thing3name">Sunset Kayak Tours</div><div class="desc" data-i18n="thing3">Guided evening paddles through the inlet — book a day ahead in summer.</div></div><div class="dist">0.8 mi</div></div>
+      </div>
+
+      <div class="rec-list" id="list-groceries">
+        <div class="rec"><div><div class="name" data-i18n="groc1name">Corner Market</div><div class="desc" data-i18n="groc1">Small grocer for basics, beach snacks, and ice. Open daily 7am–10pm.</div></div><div class="dist">0.3 mi</div></div>
+        <div class="rec"><div><div class="name" data-i18n="groc2name">Harborside Grocery</div><div class="desc" data-i18n="groc2">Full-size supermarket with a good seafood counter, about a 5-minute drive.</div></div><div class="dist">1.8 mi</div></div>
+        <div class="rec"><div><div class="name" data-i18n="groc3name">Saturday Farmers Market</div><div class="desc" data-i18n="groc3">Local produce and baked goods in the town square, Saturdays 8am–1pm.</div></div><div class="dist">0.5 mi</div></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  const translations = {
+    en: {
+      propName: "Casa Marea",
+      tagline: "Guest Guide",
+      navWelcome: "Welcome",
+      navGuide: "House Guide",
+      navCheckout: "Check-out",
+      navLocal: "Local Picks",
+      welcomeEyebrow: "Mile Marker 0 — Start Here",
+      welcomeHeadPrefix: "Welcome to",
+      welcomeSub: "We're so glad you're here. This tablet has everything you need for your stay — house instructions, check-out steps, and our favorite local spots. Tap a tab above anytime.",
+      hostNoteTitle: "A note from your host",
+      hostNote: "Make yourself at home. The beach is a 3-minute walk out the back gate, and there's a stack of towels and umbrellas in the hall closet for you to use. If anything comes up during your stay, don't hesitate to reach out.",
+      hostName: "Hosted by Anthony",
+      wifiNetworkLabel: "Wi-Fi Network",
+      wifiPasswordLabel: "Wi-Fi Password",
+      checkinLbl: "Check-in",
+      checkoutLbl: "Check-out",
+      addressLbl: "Address",
+      guideEyebrow: "Mile Marker 1 — Getting Settled",
+      guideHead: "House Guide",
+      guideSub: "Quick instructions for the essentials around the apartment.",
+      acTitle: "AC & Heat",
+      acBody: "Thermostat is on the hallway wall by the kitchen. Press the dial to adjust — please keep it between 68–76°F while the windows are open so it doesn't work overtime.",
+      kitchenTitle: "Kitchen",
+      kitchenBody: "Coffee, tea, and basic spices are stocked in the cabinet above the coffee maker. Dishwasher pods are under the sink — just push start, no rinse needed.",
+      tvTitle: "TV & Streaming",
+      tvBody: "Netflix and YouTube are logged in on the living room TV. Use the black remote — press \"Input\" if it opens to the wrong source.",
+      parkingTitle: "Parking",
+      parkingBody: "One assigned spot in the lot behind the building, marked with your unit number. Street parking is free after 6pm and on weekends.",
+      trashTitle: "Trash & Recycling",
+      trashBody: "Bins are in the side alley. Trash pickup is Tuesday and Friday mornings — please have bags out by 8am.",
+      beachTitle: "Beach Gear",
+      beachBody: "Umbrellas, chairs, and towels are in the hall closet. Please rinse and hang towels to dry on the back patio before your stay ends.",
+      rulesTitle: "House Rules",
+      rule1: "Quiet hours are 10pm–8am, please be mindful of neighbors",
+      rule2: "No smoking inside the apartment",
+      rule3: "No additional guests beyond those booked",
+      rule4: "Please don't move furniture between rooms",
+      checkoutEyebrow: "Mile Marker 2 — Before You Go",
+      checkoutHead: "Check-out Instructions",
+      checkoutBannerLabel: "Check-out time",
+      step1Title: "Start the dishwasher",
+      step1Body: "load any dishes in the sink and press start, no need to unload it.",
+      step2Title: "Take out the trash",
+      step2Body: "bag it up and drop it in the alley bins out back.",
+      step3Title: "Gather towels",
+      step3Body: "leave used towels and linens in a pile by the washing machine.",
+      step4Title: "Turn off AC/heat and lights",
+      step4Body: "set the thermostat back to 72°F.",
+      step5Title: "Lock up",
+      step5Body: "pull the front door shut until it clicks, and drop the key in the lockbox by the entrance.",
+      checkoutNote: "Need a later check-out? Text your host before 9am the day of and we'll do our best to accommodate.",
+      localEyebrow: "Mile Marker 3 — Explore the Area",
+      localHead: "Local Picks",
+      tabRestaurants: "Restaurants",
+      tabThings: "Things To Do",
+      tabGroceries: "Groceries",
+      rest1: "Fresh seafood right on the water — go for sunset and get the grilled snapper.",
+      rest2: "Best espresso in town, and their breakfast sandwiches are worth the short line.",
+      rest3: "Casual, cash-only, incredible fish tacos. Open until 9pm.",
+      thing1name: "Public Beach Access",
+      thing1: "Right at the end of the street — quietest in the morning before 10am.",
+      thing2name: "Shoreline Bike Rentals",
+      thing2: "Rent beach cruisers by the hour, great for the boardwalk path.",
+      thing3name: "Sunset Kayak Tours",
+      thing3: "Guided evening paddles through the inlet — book a day ahead in summer.",
+      groc1name: "Corner Market",
+      groc1: "Small grocer for basics, beach snacks, and ice. Open daily 7am–10pm.",
+      groc2name: "Harborside Grocery",
+      groc2: "Full-size supermarket with a good seafood counter, about a 5-minute drive.",
+      groc3name: "Saturday Farmers Market",
+      groc3: "Local produce and baked goods in the town square, Saturdays 8am–1pm."
+    },
+    es: {
+      propName: "Casa Marea",
+      tagline: "Guía para huéspedes",
+      navWelcome: "Bienvenida",
+      navGuide: "Guía de la casa",
+      navCheckout: "Salida",
+      navLocal: "Recomendaciones",
+      welcomeEyebrow: "Km 0 — Empieza aquí",
+      welcomeHeadPrefix: "Bienvenido a",
+      welcomeSub: "Nos alegra que estés aquí. Esta tablet tiene todo lo que necesitas para tu estadía: instrucciones de la casa, pasos para la salida y nuestros lugares favoritos de la zona. Toca una pestaña arriba en cualquier momento.",
+      hostNoteTitle: "Una nota de tu anfitrión",
+      hostNote: "Siéntete como en casa. La playa está a 3 minutos caminando por la puerta trasera, y hay toallas y sombrillas en el armario del pasillo para que uses. Si necesitas algo durante tu estadía, no dudes en contactarnos.",
+      hostName: "Anfitrión: Anthony",
+      wifiNetworkLabel: "Red de Wi-Fi",
+      wifiPasswordLabel: "Contraseña de Wi-Fi",
+      checkinLbl: "Entrada",
+      checkoutLbl: "Salida",
+      addressLbl: "Dirección",
+      guideEyebrow: "Km 1 — Instalándote",
+      guideHead: "Guía de la casa",
+      guideSub: "Instrucciones rápidas sobre lo esencial del apartamento.",
+      acTitle: "Aire acondicionado y calefacción",
+      acBody: "El termostato está en la pared del pasillo junto a la cocina. Presiona la perilla para ajustar — mantenlo entre 20–24°C mientras las ventanas estén abiertas para que no trabaje de más.",
+      kitchenTitle: "Cocina",
+      kitchenBody: "Café, té y especias básicas están en el armario sobre la cafetera. Las pastillas del lavavajillas están debajo del fregadero — solo presiona iniciar, no es necesario enjuagar.",
+      tvTitle: "TV y streaming",
+      tvBody: "Netflix y YouTube ya están conectados en el televisor de la sala. Usa el control remoto negro — presiona \"Input\" si se abre en la fuente equivocada.",
+      parkingTitle: "Estacionamiento",
+      parkingBody: "Tienes un lugar asignado en el estacionamiento detrás del edificio, marcado con el número de tu unidad. El estacionamiento en la calle es gratis después de las 6pm y los fines de semana.",
+      trashTitle: "Basura y reciclaje",
+      trashBody: "Los contenedores están en el callejón lateral. La recolección de basura es los martes y viernes por la mañana — por favor saca las bolsas antes de las 8am.",
+      beachTitle: "Equipo de playa",
+      beachBody: "Sombrillas, sillas y toallas están en el armario del pasillo. Por favor enjuaga y cuelga las toallas a secar en el patio trasero antes de que termine tu estadía.",
+      rulesTitle: "Reglas de la casa",
+      rule1: "El horario de silencio es de 10pm a 8am, por favor respeta a los vecinos",
+      rule2: "No fumar dentro del apartamento",
+      rule3: "No se permiten huéspedes adicionales a los reservados",
+      rule4: "Por favor no muevas los muebles entre las habitaciones",
+      checkoutEyebrow: "Km 2 — Antes de irte",
+      checkoutHead: "Instrucciones de salida",
+      checkoutBannerLabel: "Hora de salida",
+      step1Title: "Inicia el lavavajillas",
+      step1Body: "coloca los platos que haya en el fregadero y presiona iniciar, no es necesario vaciarlo.",
+      step2Title: "Saca la basura",
+      step2Body: "embólsala y llévala a los contenedores del callejón trasero.",
+      step3Title: "Junta las toallas",
+      step3Body: "deja las toallas y sábanas usadas en una pila junto a la lavadora.",
+      step4Title: "Apaga el aire/calefacción y las luces",
+      step4Body: "vuelve a poner el termostato en 22°C.",
+      step5Title: "Cierra con llave",
+      step5Body: "empuja la puerta principal hasta que haga clic, y deja la llave en la caja de seguridad de la entrada.",
+      checkoutNote: "¿Necesitas salir más tarde? Envía un mensaje a tu anfitrión antes de las 9am de ese día y haremos lo posible por ayudarte.",
+      localEyebrow: "Km 3 — Explora la zona",
+      localHead: "Recomendaciones locales",
+      tabRestaurants: "Restaurantes",
+      tabThings: "Qué hacer",
+      tabGroceries: "Supermercados",
+      rest1: "Mariscos frescos frente al mar — ve al atardecer y pide el pargo a la parrilla.",
+      rest2: "El mejor espresso de la ciudad, y sus sándwiches de desayuno valen la pequeña fila.",
+      rest3: "Informal, solo efectivo, tacos de pescado increíbles. Abierto hasta las 9pm.",
+      thing1name: "Acceso público a la playa",
+      thing1: "Justo al final de la calle — más tranquilo por la mañana antes de las 10am.",
+      thing2name: "Alquiler de bicicletas Shoreline",
+      thing2: "Alquila bicicletas playeras por hora, ideal para el paseo marítimo.",
+      thing3name: "Paseos en kayak al atardecer",
+      thing3: "Paseos guiados en kayak por la ensenada — reserva con un día de anticipación en verano.",
+      groc1name: "Corner Market",
+      groc1: "Tienda pequeña para lo básico, snacks de playa y hielo. Abierto todos los días de 7am a 10pm.",
+      groc2name: "Harborside Grocery",
+      groc2: "Supermercado completo con buena sección de mariscos, a unos 5 minutos en auto.",
+      groc3name: "Mercado de agricultores de los sábados",
+      groc3: "Productos locales y repostería en la plaza del pueblo, sábados de 8am a 1pm."
+    }
+  };
+
+  let currentLang = 'en';
+
+  function applyLang(lang){
+    currentLang = lang;
+    const dict = translations[lang];
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+      const key = el.getAttribute('data-i18n');
+      if(dict[key] !== undefined){
+        el.innerHTML = dict[key];
+      }
+    });
+    document.documentElement.lang = lang;
+    document.querySelectorAll('.lang-btn').forEach(b=>{
+      b.classList.toggle('active', b.dataset.lang === lang);
+    });
+  }
+
+  document.querySelectorAll('.lang-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=> applyLang(btn.dataset.lang));
+  });
+
+  // ---- Nav switching ----
+  document.querySelectorAll('.navbtn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.navbtn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-'+btn.dataset.panel).classList.add('active');
+      document.querySelector('main').scrollTop = 0;
+    });
+  });
+
+  document.querySelectorAll('.subtab').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.subtab').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.rec-list').forEach(l=>l.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('list-'+btn.dataset.list).classList.add('active');
+    });
+  });
+
+  // ---- Register service worker for offline support ----
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js').catch(err => {
+        console.log('Service worker registration failed:', err);
+      });
+    });
+  }
+
+  // ---- Auto-refresh every 6 hours, but only if actually online ----
+  // (avoids reloading into a blank/offline state during a real outage)
+  setInterval(() => {
+    if (navigator.onLine) location.reload();
+  }, 6*60*60*1000);
+</script>
+</body>
+</html>
