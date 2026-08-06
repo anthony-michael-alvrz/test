@@ -31,7 +31,7 @@ export async function POST(req: Request) {
   // Load the property and confirm this user owns it.
   const { data: prop, error: propErr } = await admin
     .from("properties")
-    .select("id, public_id, version, content, owner_user_id")
+    .select("id, slug, version, content, owner_user_id")
     .eq("id", propertyId)
     .single();
   if (propErr || !prop) return Response.json({ error: "Property not found" }, { status: 404 });
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
   // Publish: bump version, write the file, record the new version.
   const newVersion = (prop.version ?? 0) + 1;
   const published = { ...(prop.content as Record<string, unknown>), version: newVersion };
-  const path = `${prop.public_id}/config.json`;
+  const path = `${prop.slug}/config.json`;
 
   const { error: upErr } = await admin.storage
     .from("published")

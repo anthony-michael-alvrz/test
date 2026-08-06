@@ -5,7 +5,10 @@
 // row-level security. Never ship this key to the browser, never commit it.
 //
 // Usage (from the dashboard/ folder):
-//   node --env-file=.env.local scripts/provision.mjs customer@email.com
+//   node --env-file=.env.local scripts/provision.mjs customer@email.com <slug>
+//
+// <slug> becomes the tablet URL (…?p=<slug>) and the published file path. Pick a
+// plain, readable slug (lowercase letters, digits, hyphens), e.g. maria-yunque.
 //
 // The customer must have created their login in the dashboard first, so there
 // is an auth user to attach the property to.
@@ -18,6 +21,7 @@ import { createClient } from "@supabase/supabase-js";
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const email = process.argv[2];
+const slug = process.argv[3];
 
 function fail(msg) {
   console.error("✗ " + msg);
@@ -31,7 +35,9 @@ if (!serviceKey || serviceKey.includes("YOUR-")) {
       "  Get it from Supabase: Project Settings -> API -> service_role (secret)."
   );
 }
-if (!email) fail("Usage: node --env-file=.env.local scripts/provision.mjs <customer-email>");
+if (!email) fail("Usage: node --env-file=.env.local scripts/provision.mjs <customer-email> <slug>");
+if (!slug) fail("Missing <slug>. Usage: ...provision.mjs <customer-email> <slug>  (e.g. maria-yunque)");
+if (!/^[a-z0-9-]+$/.test(slug)) fail(`Invalid slug "${slug}". Use lowercase letters, digits, and hyphens only.`);
 
 // Seed content is the existing guide config, so the tablet has a full, valid guide.
 const here = dirname(fileURLToPath(import.meta.url));
@@ -53,13 +59,17 @@ if (!user) {
 // Create the property, owned by that customer. Service-role bypasses RLS.
 const { data: prop, error: insErr } = await admin
   .from("properties")
-  .insert({ owner_user_id: user.id, content: starter })
-  .select("public_id")
+  .insert({ owner_user_id: user.id, slug, content: starter })
+  .select("slug")
   .single();
-if (insErr) fail("Could not create property: " + insErr.message);
+if (insErr) {
+  if (insErr.code === "23505") fail(`Slug "${slug}" is already taken. Pick a different one.`);
+  fail("Could not create property: " + insErr.message);
+}
 
-const publishedPath = `published/${prop.public_id}/config.json`;
+const publishedPath = `published/${prop.slug}/config.json`;
 console.log(`✓ Provisioned a property for ${email}`);
-console.log(`  public_id:      ${prop.public_id}`);
-console.log(`  publishes to:   ${publishedPath}`);
+console.log(`  slug:          ${prop.slug}`);
+console.log(`  tablet URL:    …/index.html?p=${prop.slug}`);
+console.log(`  publishes to:  ${publishedPath}`);
 console.log(`  The customer can now log in and edit it. It appears on the tablet once they publish.`);

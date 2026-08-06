@@ -25,9 +25,11 @@ service-role key as a server-only secret.
 
 | Where | Name | What it does |
 |---|---|---|
-| `index.html` URL | `?config=<url>` | Which config the tablet loads. Defaults to the in-repo `config.json`; point it at a published file's URL to serve dashboard-managed content. Set via the tablet's start URL (Fully Kiosk). See `index.html:305`. |
-| `service-worker.js` | `CACHE_VERSION` | Cache-buster. Bump it (`v7` → `v8` …) after editing `index.html` or a theme, so tablets discard the old cached version. See `service-worker.js:2`. |
-| `index.html` | poll interval | How often the tablet re-checks its config — currently 5 minutes, hard-coded (`index.html:564`). |
+| `index.html` URL | `?p=<slug>` | **Preferred** — the short tablet URL. The guide expands it to `<publishBase>/<slug>/config.json` using `settings.json`. Set as the tablet's start URL (Fully Kiosk), e.g. `…/test/?p=maria-yunque`. |
+| `index.html` URL | `?config=<url>` | Escape hatch — load a config from an explicit full URL (wins over `?p=`). Defaults to the in-repo `config.json` when neither is given. See `index.html:305`. |
+| `settings.json` | `publishBase` | The Supabase Storage folder that holds published files. The one place the Supabase URL lives (config, not code) — change it only if the Supabase project changes. Same-origin with the guide and precached for offline. |
+| `service-worker.js` | `CACHE_VERSION` | Cache-buster. Bump it (`v7` → `v8` …) after editing `index.html`, `settings.json`, or a theme, so tablets discard the old cached version. See `service-worker.js:2`. |
+| `index.html` | poll interval | How often the tablet re-checks its config — currently 5 minutes, hard-coded. |
 | `config.json` | `theme`, `property.*`, `en`/`es` | The guide's content (guest name, wifi, rules…). Not env vars, but the values that change per booking/property. See the main [README](../README.md). |
 
 ## 3. Supabase project settings (one-time, not in code)

@@ -68,17 +68,19 @@ Open the URL it prints (usually http://localhost:3000).
 
 **As the operator (you, from a terminal in this folder):**
 Provision a property for that customer — this is what you'd do when installing a
-tablet. The customer must have created their login first.
+tablet. The customer must have created their login first. You also choose a
+**slug** — a short, readable id (lowercase letters, digits, hyphens) that becomes
+the tablet's URL and should not change afterward.
 ```bash
-node --env-file=.env.local scripts/provision.mjs customer@email.com
+node --env-file=.env.local scripts/provision.mjs customer@email.com maria-yunque
 ```
-It seeds the property from the current guide content and prints its `public_id`.
+It seeds the property from the current guide content and prints the tablet URL.
 
 **Back as the customer:**
 3. Reload — your property now appears. Edit the guest name or wi-fi, then **Save**
    (stores it) and **Publish to tablet** (writes the public file, bumps version).
-4. The page shows the published file URL. Point the tablet/app at:
-   `…/index.html?config=<that URL>`
+4. The page shows the short tablet URL. Set it as the tablet's start URL:
+   `…/test/?p=<slug>`
 
 ## Notes / caveats
 - **Publishing is server-side.** The browser can't write to Storage directly —

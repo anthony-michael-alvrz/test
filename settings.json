@@ -1,0 +1,4 @@
+{
+  "_comment": "Deployment settings for the guide app (not per-property content). publishBase is the Supabase Storage folder that holds published property files; the guide builds <publishBase>/<slug>/config.json from a ?p=<slug> URL. Change this only if the Supabase project changes.",
+  "publishBase": "https://mtndncxvdsqnxwpsipkz.supabase.co/storage/v1/object/public/published"
+}

@@ -8,13 +8,12 @@ import { supabase } from "@/lib/supabaseClient";
 type Content = Record<string, any>;
 type Property = {
   id: string;
-  public_id: string;
+  slug: string;
   version: number;
   content: Content;
 };
 
-// Where the guide (index.html) is deployed. The published file URL is appended
-// as ?config=… to make the address the tablet should open.
+// Where the guide (index.html) is deployed. The tablet opens <base>?p=<slug>.
 const TABLET_BASE =
   process.env.NEXT_PUBLIC_TABLET_BASE_URL ||
   "https://anthony-michael-alvrz.github.io/test/";
@@ -37,7 +36,7 @@ export default function Home() {
   const loadProperty = useCallback(async () => {
     const { data, error } = await supabase
       .from("properties")
-      .select("id, public_id, version, content")
+      .select("id, slug, version, content")
       .limit(1)
       .maybeSingle();
     if (error) {
@@ -214,8 +213,7 @@ export default function Home() {
       ) : (
         <>
           <p className="muted">
-            Public ID: <code>{property.public_id}</code> · Version:{" "}
-            {property.version}
+            Slug: <code>{property.slug}</code> · Version: {property.version}
           </p>
           <label>
             Guest name
@@ -249,11 +247,11 @@ export default function Home() {
               start URL:
               <br />
               <a
-                href={`${TABLET_BASE}index.html?config=${encodeURIComponent(publishedUrl)}`}
+                href={`${TABLET_BASE}?p=${property.slug}`}
                 target="_blank"
                 rel="noreferrer"
               >
-                {`${TABLET_BASE}index.html?config=${publishedUrl}`}
+                {`${TABLET_BASE}?p=${property.slug}`}
               </a>
               <br />
               <br />

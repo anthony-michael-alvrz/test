@@ -9,6 +9,10 @@
 create table if not exists public.properties (
   id            uuid primary key default gen_random_uuid(),
   public_id     text not null unique default replace(gen_random_uuid()::text, '-', ''),
+  -- slug is the public path/URL key: the tablet opens ...?p=<slug> and the
+  -- published file lives at published/<slug>/config.json. Operator-set at
+  -- provisioning; must be a plain slug (lowercase letters, digits, hyphens).
+  slug          text not null unique,
   owner_user_id uuid not null references auth.users (id),
   version       int  not null default 0,
   content       jsonb not null default '{}'::jsonb,

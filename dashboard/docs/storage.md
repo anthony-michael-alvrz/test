@@ -17,20 +17,22 @@ file the tablet can fetch. Nothing the customer types is visible to guests until
 
 ## One file per customer
 
-Every property has a `public_id` — a random 32-character id (e.g.
-`896715183a604d689914b6e0a1d93510`). Publishing writes that property's content to:
+Every property has a `slug` — an operator-chosen, readable id (e.g. `maria-yunque`). Publishing
+writes that property's content to:
 
 ```
-published/<public_id>/config.json
+published/<slug>/config.json
 ```
 
-So each customer gets their own file at their own unguessable path. Publishing again
-overwrites that same file and bumps the `version` inside it.
+So each customer gets their own file at their own path, and the tablet's short URL is just
+`…/test/?p=<slug>`. Publishing again overwrites that same file and bumps the `version` inside
+it. The slug is set at provisioning and should not change — it's baked into the tablet's start
+URL.
 
 The public URL the tablet reads looks like:
 
 ```
-https://<your-project>.supabase.co/storage/v1/object/public/published/<public_id>/config.json
+https://<your-project>.supabase.co/storage/v1/object/public/published/<slug>/config.json
 ```
 
 ## The flow
@@ -79,15 +81,18 @@ Two independent layers:
 - **In the dashboard (database):** Postgres row-level security means a logged-in customer can
   only read and edit the one property row they own. They can't see or change anyone else's —
   and they can't create properties (that's an operator action, see the main README).
-- **In Storage (published files):** each file sits at its own random `public_id` path, so one
-  customer's published URL reveals nothing about another's.
+- **In Storage (published files):** each file sits at its own `slug` path, so one customer's
+  file is separate from another's.
 
 ## Security notes
 
 - The `published` bucket is public, so **anyone who has a file's URL can read it**, including
   the wifi password in it. That's the same exposure as the original public GitHub-hosted
-  `config.json`. The `public_id` makes the path unguessable, but treat it as "unlisted," not
-  "secret." Don't put anything in the guide you wouldn't put on a note in the rental.
+  `config.json`. Don't put anything in the guide you wouldn't put on a note in the rental.
+- **Slugs are guessable.** A readable slug like `maria-yunque` means the path is discoverable —
+  it does *not* provide the obscurity a random id would. This is no worse than today's public
+  repo, but treat published content as fully public. If you want a middle ground, use slugs with
+  a short random suffix (`maria-yunque-7f3k`): still readable, not trivially guessable.
 - The service-role key is what makes server-side publishing work. It must stay server-side
   only (no `NEXT_PUBLIC_` prefix) and never be committed — see the main README.
 

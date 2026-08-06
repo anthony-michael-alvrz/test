@@ -302,14 +302,33 @@ h1.pagehead{
    ============================================================ */
 
 const params = new URLSearchParams(location.search);
-const CONFIG_FILE = params.get('config') || 'config.json';
+// Config source resolution:
+//   ?config=<url>  → use it directly (explicit override)
+//   ?p=<slug>      → expand to <publishBase>/<slug>/config.json via settings.json
+//   otherwise      → the in-repo config.json
+// The publish base lives in settings.json (same origin), so no URL is hardcoded here.
+let CONFIG_FILE = params.get('config') || 'config.json';
+
+async function resolveConfigFile(){
+  if (params.get('config')) return;            // explicit override wins
+  const slug = params.get('p');
+  if (slug && /^[a-z0-9-]+$/i.test(slug)) {    // guard: only plain slugs build a URL
+    try {
+      const s = await fetch('settings.json', {cache:'no-cache'}).then(r => r.json());
+      if (s && s.publishBase) {
+        CONFIG_FILE = s.publishBase.replace(/\/+$/, '') + '/' + slug + '/config.json';
+      }
+    } catch(_) { /* no settings / offline — fall back to the local config.json */ }
+  }
+}
 
 let CFG = null, currentLang = null, currentPanel = 'welcome', currentCat = 0;
 
 const esc = s => String(s == null ? '' : s)
   .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-function boot(){
+async function boot(){
+  await resolveConfigFile();
   fetch(CONFIG_FILE, {cache:'no-cache'})
     .then(r => { if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
     .then(cfg => {
