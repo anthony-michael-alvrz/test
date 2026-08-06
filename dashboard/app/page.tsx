@@ -13,6 +13,12 @@ type Property = {
   content: Content;
 };
 
+// Where the guide (index.html) is deployed. The published file URL is appended
+// as ?config=… to make the address the tablet should open.
+const TABLET_BASE =
+  process.env.NEXT_PUBLIC_TABLET_BASE_URL ||
+  "https://anthony-michael-alvrz.github.io/test/";
+
 export default function Home() {
   const [ready, setReady] = useState(false);
   const [email, setEmail] = useState("");
@@ -239,12 +245,22 @@ export default function Home() {
           </div>
           {publishedUrl && (
             <p className="msg">
-              Published file:{" "}
+              <strong>Open this on the tablet</strong> — or set it as Fully Kiosk&apos;s
+              start URL:
+              <br />
+              <a
+                href={`${TABLET_BASE}index.html?config=${encodeURIComponent(publishedUrl)}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                {`${TABLET_BASE}index.html?config=${publishedUrl}`}
+              </a>
+              <br />
+              <br />
+              Underlying data file:{" "}
               <a href={publishedUrl} target="_blank" rel="noreferrer">
                 {publishedUrl}
               </a>
-              <br />
-              Point the tablet at: <code>…/index.html?config={publishedUrl}</code>
             </p>
           )}
         </>

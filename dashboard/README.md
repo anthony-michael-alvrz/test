@@ -19,6 +19,9 @@ Owner logs in here  ──edit──>  Supabase (Postgres)
 This is a thin prototype to prove the loop for one property. It intentionally
 edits only a few fields (guest name, wi-fi) for now.
 
+**How storage works per customer** (where the config files live, how they're
+isolated, read/write paths): see [docs/storage.md](docs/storage.md).
+
 **Who can do what:** the operator (you) provisions a property when a tablet is
 installed. Customers log in and can only *edit* the property assigned to them —
 they cannot create properties.
