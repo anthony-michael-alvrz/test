@@ -541,14 +541,24 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-/* ---- Poll config for changes every 5 min; reload only if it changed ---- */
-let lastConfigText = null;
+/* ---- Poll config for changes every 5 min; reload only if it changed ----
+   Version-aware: if the config carries a numeric "version" (published by the
+   dashboard), reload when it changes. Configs without a version — like a
+   hand-edited config.json — fall back to comparing the raw text. */
+let lastConfigText = null, lastVersion = null;
 setInterval(async () => {
   if (!navigator.onLine) return;
   try {
     const res = await fetch(CONFIG_FILE + '?t=' + Date.now(), {cache:'no-store'});
     const text = await res.text();
-    if (lastConfigText !== null && text !== lastConfigText) location.reload();
+    let version = null;
+    try { const v = JSON.parse(text).version; if (typeof v === 'number') version = v; } catch(_){}
+    if (version !== null) {
+      if (lastVersion !== null && version !== lastVersion) location.reload();
+      lastVersion = version;
+    } else if (lastConfigText !== null && text !== lastConfigText) {
+      location.reload();
+    }
     lastConfigText = text;
   } catch(e){ /* offline or blocked — ignore */ }
 }, 5 * 60 * 1000);
