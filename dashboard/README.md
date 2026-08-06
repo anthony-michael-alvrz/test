@@ -22,6 +22,9 @@ edits only a few fields (guest name, wi-fi) for now.
 **How storage works per customer** (where the config files live, how they're
 isolated, read/write paths): see [docs/storage.md](docs/storage.md).
 
+**Every variable/knob to set** (env vars, tablet knobs, Supabase settings): see
+[../docs/configuration.md](../docs/configuration.md).
+
 **Who can do what:** the operator (you) provisions a property when a tablet is
 installed. Customers log in and can only *edit* the property assigned to them —
 they cannot create properties.

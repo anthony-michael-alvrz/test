@@ -11,6 +11,9 @@ Runs full-screen on a locked-down tablet.
 | **Look** | `themes/*.css` | You want a different visual style |
 | **Structure** | `index.html` | Almost never |
 
+All variables and settings (env vars, cache version, Supabase config) are listed in
+[docs/configuration.md](docs/configuration.md).
+
 ## Changing the guest name between bookings
 
 1. Open `config.json` on GitHub, click the pencil icon.
