@@ -75,10 +75,19 @@ It seeds the property from the current guide content and prints its `public_id`.
    `…/index.html?config=<that URL>`
 
 ## Notes / caveats
+- **Publishing is server-side.** The browser can't write to Storage directly —
+  this project signs user tokens with an asymmetric key that the Storage service
+  doesn't validate, so authenticated uploads are rejected. Instead, Publish calls
+  `app/api/publish`, which verifies the caller owns the property and writes the
+  file with the service-role key. The browser never writes to Storage. This is
+  why the service-role key must be set for the running app, not just the
+  provisioning script.
 - **Offline:** the published file lives on a different origin (Supabase), so the
   tablet's offline cache won't store it without CORS handling. Fine for testing
   online; must be solved before this replaces `config.json` on a real tablet.
-- **Security:** customer isolation is enforced by Postgres Row-Level Security,
-  not app code. The anon key being public is expected.
+- **Security:** customer isolation is enforced by Postgres Row-Level Security on
+  the database, and the publish route re-checks ownership before writing. The
+  anon key being public is expected.
 - **Deploy (later):** `npm run build`, then host on Vercel (free) so owners reach
-  it on a real URL. Add the same two env vars in Vercel's project settings.
+  it on a real URL. Add all three env vars in Vercel's project settings (the
+  service-role key as a server-side secret, never exposed to the browser).

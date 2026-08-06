@@ -116,33 +116,33 @@ export default function Home() {
     if (!property) return;
     setBusy(true);
     setMsg("");
-    const newVersion = (property.version ?? 0) + 1;
-    const published = { ...property.content, version: newVersion };
-    const path = `${property.public_id}/config.json`;
-    const blob = new Blob([JSON.stringify(published, null, 2)], {
-      type: "application/json",
+    // Publish happens server-side (see app/api/publish). We send our login token;
+    // the server verifies ownership and writes the file with the admin key. It
+    // publishes the property's saved content, so Save before Publish.
+    const { data: sess } = await supabase.auth.getSession();
+    const token = sess.session?.access_token;
+    if (!token) {
+      setMsg("Your session expired — please sign in again.");
+      setBusy(false);
+      return;
+    }
+    const res = await fetch("/api/publish", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ propertyId: property.id }),
     });
-    const { error: upErr } = await supabase.storage
-      .from("published")
-      .upload(path, blob, { upsert: true, contentType: "application/json" });
-    if (upErr) {
-      setMsg("Publish failed (upload): " + upErr.message);
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setMsg("Publish failed: " + (out.error ?? `HTTP ${res.status}`));
       setBusy(false);
       return;
     }
-    const { error: verErr } = await supabase
-      .from("properties")
-      .update({ version: newVersion })
-      .eq("id", property.id);
-    if (verErr) {
-      setMsg("Publish failed (version bump): " + verErr.message);
-      setBusy(false);
-      return;
-    }
-    setProperty({ ...property, version: newVersion });
-    const { data: pub } = supabase.storage.from("published").getPublicUrl(path);
-    setPublishedUrl(pub.publicUrl);
-    setMsg(`Published version ${newVersion}.`);
+    setProperty({ ...property, version: out.version });
+    setPublishedUrl(out.publicUrl);
+    setMsg(`Published version ${out.version}.`);
     setBusy(false);
   }
 

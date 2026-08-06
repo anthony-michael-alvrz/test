@@ -54,15 +54,10 @@ insert into storage.buckets (id, name, public)
 values ('published', 'published', true)
 on conflict (id) do nothing;
 
--- Public read is granted by the bucket being public (getPublicUrl works).
--- Writes are limited to authenticated users. NOTE: for this prototype any
--- authenticated user may write to the bucket; tighten to per-property paths
--- before real multi-customer use.
-create policy "authenticated can upload published"
-  on storage.objects for insert to authenticated
-  with check (bucket_id = 'published');
-
-create policy "authenticated can update published"
-  on storage.objects for update to authenticated
-  using (bucket_id = 'published')
-  with check (bucket_id = 'published');
+-- No storage.objects policies are needed:
+--   * Public read is served by the bucket being public (getPublicUrl works).
+--   * Writes happen server-side in app/api/publish using the service-role key,
+--     which bypasses RLS. The browser never writes to Storage directly.
+-- (Direct browser uploads under RLS were abandoned: this project signs user
+--  tokens with an asymmetric key that the Storage service doesn't validate, so
+--  auth.uid() is null there and every authenticated write was rejected.)
