@@ -18,6 +18,19 @@ const TABLET_BASE =
   process.env.NEXT_PUBLIC_TABLET_BASE_URL ||
   "https://anthony-michael-alvrz.github.io/test/";
 
+// Curated libraries. To add an option: build + verify it in the tablet, then add
+// it here. `value` is what gets written into the published config.
+const THEME_OPTIONS = [
+  { value: "themes/yunque.css", label: "Yunque — airy, muted greens" },
+  { value: "themes/slate.css", label: "Slate — cooler, serif headings" },
+];
+const LAYOUT_OPTIONS = [
+  { value: "standard", label: "Standard — rules inside House Guide" },
+  { value: "rules-as-tab", label: "House Rules as its own tab" },
+];
+const DEFAULT_THEME = THEME_OPTIONS[0].value;
+const DEFAULT_LAYOUT = LAYOUT_OPTIONS[0].value;
+
 export default function Home() {
   const [ready, setReady] = useState(false);
   const [email, setEmail] = useState("");
@@ -28,6 +41,8 @@ export default function Home() {
   const [guestName, setGuestName] = useState("");
   const [wifiNetwork, setWifiNetwork] = useState("");
   const [wifiPassword, setWifiPassword] = useState("");
+  const [theme, setTheme] = useState(DEFAULT_THEME);
+  const [layout, setLayout] = useState(DEFAULT_LAYOUT);
 
   const [publishedUrl, setPublishedUrl] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
@@ -50,6 +65,8 @@ export default function Home() {
       setGuestName(p.guestName ?? "");
       setWifiNetwork(p.wifiNetwork ?? "");
       setWifiPassword(p.wifiPassword ?? "");
+      setTheme(prop.content?.theme ?? DEFAULT_THEME);
+      setLayout(prop.content?.layout ?? DEFAULT_LAYOUT);
     } else {
       setProperty(null);
     }
@@ -98,6 +115,8 @@ export default function Home() {
     setMsg("");
     const newContent: Content = {
       ...property.content,
+      theme,
+      layout,
       property: {
         ...(property.content.property ?? {}),
         guestName,
@@ -232,6 +251,26 @@ export default function Home() {
               value={wifiPassword}
               onChange={(e) => setWifiPassword(e.target.value)}
             />
+          </label>
+          <label>
+            Theme
+            <select value={theme} onChange={(e) => setTheme(e.target.value)}>
+              {THEME_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Layout
+            <select value={layout} onChange={(e) => setLayout(e.target.value)}>
+              {LAYOUT_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
           </label>
           <div className="row">
             <button onClick={save} disabled={busy}>

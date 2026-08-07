@@ -25,6 +25,9 @@ isolated, read/write paths): see [docs/storage.md](docs/storage.md).
 **Every variable/knob to set** (env vars, tablet knobs, Supabase settings): see
 [../docs/configuration.md](../docs/configuration.md).
 
+**Themes & layouts** (how the theme/layout dropdowns work, how to add options): see
+[../docs/configurable-layout.md](../docs/configurable-layout.md).
+
 **Who can do what:** the operator (you) provisions a property when a tablet is
 installed. Customers log in and can only *edit* the property assigned to them —
 they cannot create properties.

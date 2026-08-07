@@ -30,7 +30,9 @@ service-role key as a server-only secret.
 | `settings.json` | `publishBase` | The Supabase Storage folder that holds published files. The one place the Supabase URL lives (config, not code) — change it only if the Supabase project changes. Same-origin with the guide and precached for offline. |
 | `service-worker.js` | `CACHE_VERSION` | Cache-buster. Bump it (`v7` → `v8` …) after editing `index.html`, `settings.json`, or a theme, so tablets discard the old cached version. See `service-worker.js:2`. |
 | `index.html` | poll interval | How often the tablet re-checks its config — currently 5 minutes, hard-coded. |
-| `config.json` | `theme`, `property.*`, `en`/`es` | The guide's content (guest name, wifi, rules…). Not env vars, but the values that change per booking/property. See the main [README](../README.md). |
+| `config.json` | `theme` | Which theme (visual look) the guide uses, from the theme library. Picked in the dashboard; a CSS path like `themes/yunque.css`. |
+| `config.json` | `layout` | Which layout (tab structure) the guide uses, from the layout library (`standard`, `rules-as-tab`, …). Picked in the dashboard; absent → `standard`. Defined in `index.html`'s `LAYOUTS` registry. |
+| `config.json` | `property.*`, `en`/`es` | The guide's text content (guest name, wifi, rules…). The values that change per booking/property. See the main [README](../README.md). |
 
 ## 3. Supabase project settings (one-time, not in code)
 

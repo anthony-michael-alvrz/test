@@ -1,5 +1,5 @@
 /* Bump CACHE_VERSION after editing index.html or a theme file. */
-const CACHE_VERSION = 'v8';
+const CACHE_VERSION = 'v9';
 const CACHE_NAME = 'guest-guide-' + CACHE_VERSION;
 
 const PRECACHE_URLS = [

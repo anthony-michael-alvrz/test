@@ -29,7 +29,7 @@ label {
   color: #3f4f47;
 }
 
-input {
+input, select {
   font: inherit;
   padding: 10px 12px;
   border: 1px solid #cdd8d0;
@@ -37,7 +37,7 @@ input {
   background: #fff;
 }
 
-input:focus { outline: 2px solid #7c9a86; outline-offset: 1px; }
+input:focus, select:focus { outline: 2px solid #7c9a86; outline-offset: 1px; }
 
 .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .row.spread { justify-content: space-between; }

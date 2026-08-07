@@ -380,11 +380,43 @@ function renderSplash(){
   });
 }
 
+/* ---------- Layout presets (curated pick-list) ----------
+   Each layout is an ordered list of tabs; a tab picks a label, heading, optional
+   sub-line, and a body composed from the shared section renderers below. Adding a
+   layout here (and verifying it against each theme) is how the "library" grows.
+   An unknown or absent CFG.layout falls back to "standard" — existing configs
+   render exactly as before. Layouts arrange content only; they never style. */
+function panel(id, head, sub, inner){
+  return `
+  <section class="panel ${currentPanel===id?'active':''}" id="panel-${id}">
+    <h1 class="pagehead">${esc(head)}</h1>
+    <div class="headrule"></div>
+    ${sub ? `<p class="sub">${esc(sub)}</p>` : ''}
+    ${inner}
+  </section>`;
+}
+
+const LAYOUTS = {
+  standard: [
+    { id:'welcome',  label:(L,ui)=>ui.navWelcome,   head:(L,ui)=>ui.welcomeHead,  sub:(L)=>L.welcome.sub, body:(L,ui,p)=>bodyWelcome(L,ui,p) },
+    { id:'guide',    label:(L,ui)=>ui.navGuide,     head:(L,ui)=>ui.guideHead,    sub:(L)=>L.guide.sub,   body:(L)=>`<div class="guide-grid">${bodyCards(L)}${bodyRulesCard(L)}</div>` },
+    { id:'checkout', label:(L,ui)=>ui.navCheckout,  head:(L,ui)=>ui.checkoutHead, sub:()=>null,           body:(L,ui,p)=>bodyCheckout(L,ui,p) },
+    { id:'local',    label:(L,ui)=>ui.navLocal,     head:(L,ui)=>ui.localHead,    sub:()=>null,           body:(L)=>bodyLocal(L) },
+  ],
+  'rules-as-tab': [
+    { id:'welcome',  label:(L,ui)=>ui.navWelcome,   head:(L,ui)=>ui.welcomeHead,   sub:(L)=>L.welcome.sub, body:(L,ui,p)=>bodyWelcome(L,ui,p) },
+    { id:'guide',    label:(L,ui)=>ui.navGuide,     head:(L,ui)=>ui.guideHead,     sub:(L)=>L.guide.sub,   body:(L)=>`<div class="guide-grid">${bodyCards(L)}</div>` },
+    { id:'rules',    label:(L)=>L.guide.rulesTitle, head:(L)=>L.guide.rulesTitle,  sub:()=>null,           body:(L)=>`<div class="guide-grid">${bodyRulesCard(L, false)}</div>` },
+    { id:'checkout', label:(L,ui)=>ui.navCheckout,  head:(L,ui)=>ui.checkoutHead,  sub:()=>null,           body:(L,ui,p)=>bodyCheckout(L,ui,p) },
+    { id:'local',    label:(L,ui)=>ui.navLocal,     head:(L,ui)=>ui.localHead,     sub:()=>null,           body:(L)=>bodyLocal(L) },
+  ],
+};
+
 /* ---------- Shell ---------- */
 function render(){
   const L = CFG[currentLang], ui = L.ui, p = CFG.property;
-  const nav = ['welcome','guide','checkout','local'];
-  const labels = {welcome:ui.navWelcome, guide:ui.navGuide, checkout:ui.navCheckout, local:ui.navLocal};
+  const tabs = LAYOUTS[CFG.layout] || LAYOUTS.standard;
+  if (!tabs.some(t => t.id === currentPanel)) currentPanel = tabs[0].id;
 
   document.getElementById('app').innerHTML = `
     <header>
@@ -394,7 +426,7 @@ function render(){
       </div>
       <div class="header-right">
         <nav>
-          ${nav.map(k => `<button class="navbtn ${k===currentPanel?'active':''}" data-panel="${k}">${esc(labels[k])}</button>`).join('')}
+          ${tabs.map(t => `<button class="navbtn ${t.id===currentPanel?'active':''}" data-panel="${t.id}">${esc(t.label(L, ui, p))}</button>`).join('')}
         </nav>
         <div class="lang-toggle">
           ${CFG.languages.map(l => `<button class="lang-btn ${l.code===currentLang?'active':''}" data-lang="${esc(l.code)}">${esc(l.label)}</button>`).join('')}
@@ -402,10 +434,7 @@ function render(){
       </div>
     </header>
     <main>
-      ${panelWelcome(L, ui, p)}
-      ${panelGuide(L, ui)}
-      ${panelCheckout(L, ui, p)}
-      ${panelLocal(L, ui)}
+      ${tabs.map(t => panel(t.id, t.head(L, ui, p), t.sub(L, ui, p), t.body(L, ui, p))).join('')}
     </main>`;
 
   document.documentElement.lang = currentLang;
@@ -414,12 +443,8 @@ function render(){
   updateOfflineBadge();
 }
 
-function panelWelcome(L, ui, p){
+function bodyWelcome(L, ui, p){
   return `
-  <section class="panel ${currentPanel==='welcome'?'active':''}" id="panel-welcome">
-    <h1 class="pagehead">${esc(ui.welcomeHead)}</h1>
-    <div class="headrule"></div>
-    <p class="sub">${esc(L.welcome.sub)}</p>
     <div class="welcome-grid">
       <div class="card wifi-card">
         <div class="wifi-head">${esc(ui.wifiTitle)}</div>
@@ -444,35 +469,31 @@ function panelWelcome(L, ui, p){
     <div class="info-strip">
       <div class="stat"><div class="num">${esc(p.checkin)}</div><div class="lbl">${esc(ui.checkinLbl)}</div></div>
       <div class="stat"><div class="num">${esc(p.checkout)}</div><div class="lbl">${esc(ui.checkoutLbl)}</div></div>
-    </div>
-  </section>`;
+    </div>`;
 }
 
-function panelGuide(L, ui){
-  return `
-  <section class="panel ${currentPanel==='guide'?'active':''}" id="panel-guide">
-    <h1 class="pagehead">${esc(ui.guideHead)}</h1>
-    <div class="headrule"></div>
-    <p class="sub">${esc(L.guide.sub)}</p>
-    <div class="guide-grid">
-      ${L.guide.cards.map(c => `
-        <div class="card guide-card">
-          <h3>${esc(c.title)}</h3>
-          <p>${esc(c.body)}</p>
-        </div>`).join('')}
-      <div class="card guide-card rules-card">
-        <h3>${esc(L.guide.rulesTitle)}</h3>
-        <ul>${L.guide.rules.map(r => `<li>${esc(r)}</li>`).join('')}</ul>
-      </div>
-    </div>
-  </section>`;
+/* House Guide cards (the grid wrapper is added by whichever tab hosts them). */
+function bodyCards(L){
+  return L.guide.cards.map(c => `
+    <div class="card guide-card">
+      <h3>${esc(c.title)}</h3>
+      <p>${esc(c.body)}</p>
+    </div>`).join('');
 }
 
-function panelCheckout(L, ui, p){
+/* House Rules as a single card (grid wrapper added by the hosting tab). The
+   inner title is dropped when the rules are their own tab, since the tab
+   heading already says "House Rules". */
+function bodyRulesCard(L, withTitle = true){
   return `
-  <section class="panel ${currentPanel==='checkout'?'active':''}" id="panel-checkout">
-    <h1 class="pagehead">${esc(ui.checkoutHead)}</h1>
-    <div class="headrule"></div>
+    <div class="card guide-card rules-card">
+      ${withTitle ? `<h3>${esc(L.guide.rulesTitle)}</h3>` : ''}
+      <ul>${L.guide.rules.map(r => `<li>${esc(r)}</li>`).join('')}</ul>
+    </div>`;
+}
+
+function bodyCheckout(L, ui, p){
+  return `
     <div class="checkout-banner">
       <span class="lbl">${esc(ui.checkoutBannerLabel)}</span>
       <span class="time">${esc(p.checkout)}</span>
@@ -484,16 +505,12 @@ function panelCheckout(L, ui, p){
           <p><strong>${esc(s.title)}</strong> — ${esc(s.body)}</p>
         </div>`).join('')}
     </div>
-    <p class="sub" style="margin-top:30px;">${esc(L.checkout.note)}</p>
-  </section>`;
+    <p class="sub" style="margin-top:30px;">${esc(L.checkout.note)}</p>`;
 }
 
-function panelLocal(L, ui){
+function bodyLocal(L){
   const cats = L.local.categories;
   return `
-  <section class="panel ${currentPanel==='local'?'active':''}" id="panel-local">
-    <h1 class="pagehead">${esc(ui.localHead)}</h1>
-    <div class="headrule"></div>
     <div class="subtabs">
       ${cats.map((c,i) => `<button class="subtab ${i===currentCat?'active':''}" data-cat="${i}">${esc(c.label)}</button>`).join('')}
     </div>
@@ -507,8 +524,7 @@ function panelLocal(L, ui){
             </div>
             ${it.meta ? `<div class="meta">${esc(it.meta)}</div>` : ''}
           </div>`).join('')}
-      </div>`).join('')}
-  </section>`;
+      </div>`).join('')}`;
 }
 
 function wire(){
