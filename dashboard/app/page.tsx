@@ -31,13 +31,24 @@ const LAYOUT_OPTIONS = [
 const DEFAULT_THEME = THEME_OPTIONS[0].value;
 const DEFAULT_LAYOUT = LAYOUT_OPTIONS[0].value;
 
+// A readable label for the property switcher: the guide's own property name if
+// set, otherwise the slug.
+function propertyLabel(p: Property): string {
+  return p.content?.property?.name || p.slug;
+}
+
 export default function Home() {
   const [ready, setReady] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
-  const [property, setProperty] = useState<Property | null>(null);
+  // An owner can own many properties (one per tablet). Load them all and let the
+  // owner switch between them; edits and publish act on the selected one.
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const property = properties.find((p) => p.id === selectedId) ?? null;
+
   const [guestName, setGuestName] = useState("");
   const [wifiNetwork, setWifiNetwork] = useState("");
   const [wifiPassword, setWifiPassword] = useState("");
@@ -48,28 +59,21 @@ export default function Home() {
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
 
-  const loadProperty = useCallback(async () => {
+  const loadProperties = useCallback(async () => {
     const { data, error } = await supabase
       .from("properties")
       .select("id, slug, version, content")
-      .limit(1)
-      .maybeSingle();
+      .order("slug", { ascending: true });
     if (error) {
       setMsg("Load error: " + error.message);
       return;
     }
-    if (data) {
-      const prop = data as Property;
-      setProperty(prop);
-      const p = prop.content?.property ?? {};
-      setGuestName(p.guestName ?? "");
-      setWifiNetwork(p.wifiNetwork ?? "");
-      setWifiPassword(p.wifiPassword ?? "");
-      setTheme(prop.content?.theme ?? DEFAULT_THEME);
-      setLayout(prop.content?.layout ?? DEFAULT_LAYOUT);
-    } else {
-      setProperty(null);
-    }
+    const list = (data ?? []) as Property[];
+    setProperties(list);
+    // Keep the current selection if it still exists, else default to the first.
+    setSelectedId((prev) =>
+      prev && list.some((p) => p.id === prev) ? prev : list[0]?.id ?? null
+    );
   }, []);
 
   useEffect(() => {
@@ -84,9 +88,32 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (userEmail) loadProperty();
-    else setProperty(null);
-  }, [userEmail, loadProperty]);
+    if (userEmail) {
+      loadProperties();
+    } else {
+      setProperties([]);
+      setSelectedId(null);
+    }
+  }, [userEmail, loadProperties]);
+
+  // Mirror the selected property's saved content into the edit fields whenever
+  // the selection (or the loaded data) changes.
+  useEffect(() => {
+    const prop = properties.find((p) => p.id === selectedId) ?? null;
+    if (!prop) return;
+    const p = prop.content?.property ?? {};
+    setGuestName(p.guestName ?? "");
+    setWifiNetwork(p.wifiNetwork ?? "");
+    setWifiPassword(p.wifiPassword ?? "");
+    setTheme(prop.content?.theme ?? DEFAULT_THEME);
+    setLayout(prop.content?.layout ?? DEFAULT_LAYOUT);
+  }, [selectedId, properties]);
+
+  function switchProperty(id: string) {
+    setSelectedId(id);
+    setPublishedUrl(null); // the publish link is per-property
+    setMsg("");
+  }
 
   async function signIn() {
     setBusy(true);
@@ -130,7 +157,9 @@ export default function Home() {
       .eq("id", property.id);
     if (error) setMsg("Save failed: " + error.message);
     else {
-      setProperty({ ...property, content: newContent });
+      setProperties((list) =>
+        list.map((p) => (p.id === property.id ? { ...p, content: newContent } : p))
+      );
       setMsg("Saved. Not visible to guests until you publish.");
     }
     setBusy(false);
@@ -164,7 +193,9 @@ export default function Home() {
       setBusy(false);
       return;
     }
-    setProperty({ ...property, version: out.version });
+    setProperties((list) =>
+      list.map((p) => (p.id === property.id ? { ...p, version: out.version } : p))
+    );
     setPublishedUrl(out.publicUrl);
     setMsg(`Published version ${out.version}.`);
     setBusy(false);
@@ -218,87 +249,106 @@ export default function Home() {
   return (
     <main className="wrap">
       <div className="row spread">
-        <h1>Your Property</h1>
+        <h1>Your Propert{properties.length === 1 ? "y" : "ies"}</h1>
         <button onClick={signOut} className="secondary">
           Sign out
         </button>
       </div>
       <p className="muted">Signed in as {userEmail}</p>
 
-      {!property ? (
+      {properties.length === 0 ? (
         <p className="muted">
           No property assigned yet — contact your installer.
         </p>
       ) : (
         <>
-          <p className="muted">
-            Slug: <code>{property.slug}</code> · Version: {property.version}
-          </p>
+          {/* Property switcher — hop between the tablets you own. */}
           <label>
-            Guest name
-            <input value={guestName} onChange={(e) => setGuestName(e.target.value)} />
-          </label>
-          <label>
-            Wi-Fi network
-            <input
-              value={wifiNetwork}
-              onChange={(e) => setWifiNetwork(e.target.value)}
-            />
-          </label>
-          <label>
-            Wi-Fi password
-            <input
-              value={wifiPassword}
-              onChange={(e) => setWifiPassword(e.target.value)}
-            />
-          </label>
-          <label>
-            Theme
-            <select value={theme} onChange={(e) => setTheme(e.target.value)}>
-              {THEME_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
+            Property{properties.length > 1 ? ` (${properties.length})` : ""}
+            <select
+              value={selectedId ?? ""}
+              onChange={(e) => switchProperty(e.target.value)}
+            >
+              {properties.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {propertyLabel(p)}
                 </option>
               ))}
             </select>
           </label>
-          <label>
-            Layout
-            <select value={layout} onChange={(e) => setLayout(e.target.value)}>
-              {LAYOUT_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div className="row">
-            <button onClick={save} disabled={busy}>
-              Save
-            </button>
-            <button onClick={publish} disabled={busy}>
-              Publish to tablet
-            </button>
-          </div>
-          {publishedUrl && (
-            <p className="msg">
-              <strong>Open this on the tablet</strong> — or set it as Fully Kiosk&apos;s
-              start URL:
-              <br />
-              <a
-                href={`${TABLET_BASE}?p=${property.slug}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {`${TABLET_BASE}?p=${property.slug}`}
-              </a>
-              <br />
-              <br />
-              Underlying data file:{" "}
-              <a href={publishedUrl} target="_blank" rel="noreferrer">
-                {publishedUrl}
-              </a>
-            </p>
+
+          {property && (
+            <>
+              <p className="muted">
+                Slug: <code>{property.slug}</code> · Version: {property.version}
+              </p>
+              <label>
+                Guest name
+                <input value={guestName} onChange={(e) => setGuestName(e.target.value)} />
+              </label>
+              <label>
+                Wi-Fi network
+                <input
+                  value={wifiNetwork}
+                  onChange={(e) => setWifiNetwork(e.target.value)}
+                />
+              </label>
+              <label>
+                Wi-Fi password
+                <input
+                  value={wifiPassword}
+                  onChange={(e) => setWifiPassword(e.target.value)}
+                />
+              </label>
+              <label>
+                Theme
+                <select value={theme} onChange={(e) => setTheme(e.target.value)}>
+                  {THEME_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Layout
+                <select value={layout} onChange={(e) => setLayout(e.target.value)}>
+                  {LAYOUT_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <div className="row">
+                <button onClick={save} disabled={busy}>
+                  Save
+                </button>
+                <button onClick={publish} disabled={busy}>
+                  Publish to tablet
+                </button>
+              </div>
+              {publishedUrl && (
+                <p className="msg">
+                  <strong>Open this on the tablet</strong> — or set it as Fully Kiosk&apos;s
+                  start URL:
+                  <br />
+                  <a
+                    href={`${TABLET_BASE}?p=${property.slug}`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {`${TABLET_BASE}?p=${property.slug}`}
+                  </a>
+                  <br />
+                  <br />
+                  Underlying data file:{" "}
+                  <a href={publishedUrl} target="_blank" rel="noreferrer">
+                    {publishedUrl}
+                  </a>
+                </p>
+              )}
+            </>
           )}
         </>
       )}
