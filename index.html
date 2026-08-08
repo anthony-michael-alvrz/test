@@ -323,31 +323,59 @@ async function resolveConfigFile(){
 }
 
 let CFG = null, currentLang = null, currentPanel = 'welcome', currentCat = 0;
+let servingCached = false;   // true when the guide on screen came from the last-good copy
 
 const esc = s => String(s == null ? '' : s)
   .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
+/* ---- Last-good config (offline resilience) ----
+   Persist the published config on every successful load, keyed by its URL, so a
+   powered tablet that briefly loses connectivity keeps showing the guide it
+   already had instead of the boot-error screen. Kept in localStorage (the config
+   is ~13KB) so it is independent of the service-worker cache version. */
+function lastGoodKey(){ return 'guest-guide:lastConfig:' + CONFIG_FILE; }
+function saveLastGood(cfg){
+  try { localStorage.setItem(lastGoodKey(), JSON.stringify(cfg)); } catch(_){}
+}
+function loadLastGood(){
+  try { const s = localStorage.getItem(lastGoodKey()); return s ? JSON.parse(s) : null; }
+  catch(_){ return null; }
+}
+
+function applyConfig(cfg, fromCache){
+  CFG = cfg;
+  servingCached = !!fromCache;
+  if (cfg.theme) document.getElementById('themeLink').href = cfg.theme;
+  currentLang = (cfg.languages && cfg.languages[0] && cfg.languages[0].code) || 'en';
+  renderSplash();
+  render();
+  updateOfflineBadge();
+}
+
+function showBootError(err){
+  document.getElementById('splash').classList.add('hidden');
+  document.getElementById('app').innerHTML =
+    '<div id="bootError"><h2>Couldn\'t load the guide</h2>' +
+    '<p>The renderer could not read <code>' + esc(CONFIG_FILE) + '</code>.</p>' +
+    '<p>Usually this means a JSON syntax error (a stray comma is the usual culprit), ' +
+    'or the page was opened directly from the file system. It must be served over ' +
+    'http:// or https:// — GitHub Pages works, double-clicking the file does not.</p>' +
+    '<p style="margin-top:16px;color:var(--ink-muted);font-size:14px;">Details: ' + esc(err.message) + '</p></div>';
+}
+
 async function boot(){
   await resolveConfigFile();
-  fetch(CONFIG_FILE, {cache:'no-cache'})
-    .then(r => { if(!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-    .then(cfg => {
-      CFG = cfg;
-      if (cfg.theme) document.getElementById('themeLink').href = cfg.theme;
-      currentLang = (cfg.languages && cfg.languages[0] && cfg.languages[0].code) || 'en';
-      renderSplash();
-      render();
-    })
-    .catch(err => {
-      document.getElementById('splash').classList.add('hidden');
-      document.getElementById('app').innerHTML =
-        '<div id="bootError"><h2>Couldn\'t load the guide</h2>' +
-        '<p>The renderer could not read <code>' + esc(CONFIG_FILE) + '</code>.</p>' +
-        '<p>Usually this means a JSON syntax error (a stray comma is the usual culprit), ' +
-        'or the page was opened directly from the file system. It must be served over ' +
-        'http:// or https:// — GitHub Pages works, double-clicking the file does not.</p>' +
-        '<p style="margin-top:16px;color:var(--ink-muted);font-size:14px;">Details: ' + esc(err.message) + '</p></div>';
-    });
+  try {
+    const r = await fetch(CONFIG_FILE, {cache:'no-cache'});
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const cfg = await r.json();
+    saveLastGood(cfg);              // refresh the offline copy on every good load
+    applyConfig(cfg, false);
+  } catch (err) {
+    const cached = loadLastGood();  // network/Supabase unreachable — fall back to last-good
+    if (cached) applyConfig(cached, true);
+    else showBootError(err);
+  }
 }
 
 /* ---------- Splash ---------- */
@@ -564,7 +592,7 @@ function updateOfflineBadge(){
   const b = document.getElementById('offlineBadge');
   if(!CFG) return;
   b.textContent = CFG[currentLang].ui.offlineNotice || '';
-  b.classList.toggle('show', !navigator.onLine);
+  b.classList.toggle('show', !navigator.onLine || servingCached);
 }
 window.addEventListener('online', updateOfflineBadge);
 window.addEventListener('offline', updateOfflineBadge);
