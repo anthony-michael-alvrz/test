@@ -1,0 +1,17 @@
+<type>(<scope>): <imperative summary>
+
+Why:
+What:
+Notes:
+
+# ─────────────────────────────────────────────────────────────────────────
+# Commit convention (see CONTRIBUTING.md). Lines starting with '#' are ignored.
+#
+# Header: <type>(<scope>): imperative summary   (<= 72 chars; "add", not "added")
+#   types:  feat fix chore docs refactor test ops
+#   scopes: tablet dashboard backend deploy docs repo
+#
+# Body:
+#   Why:   the problem / motivation
+#   What:  the key changes
+#   Notes: migrations, gotchas, follow-ups — or "none"
